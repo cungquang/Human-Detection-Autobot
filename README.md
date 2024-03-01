@@ -2,8 +2,9 @@
 Project Name:
 Group Name:
 Members:
-- Adam
+- Adam Atbi
 - Hong Quang Cung
+- Daven Chohan
 
 ## Project Description
 
