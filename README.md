@@ -3,8 +3,8 @@ Project Name:
 Group Name:
 Members:
 - Adam Atbi
-- Hong Quang Cung
 - Daven Chohan
+- Hong Quang Cung
 
 ## Project Description
 
