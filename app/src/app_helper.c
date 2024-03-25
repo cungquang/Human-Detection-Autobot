@@ -8,6 +8,7 @@
 #include <sys/epoll.h>  // for epoll()
 #include <fcntl.h>      // for open()
 #include <unistd.h>     // for close()
+#include "app_helper.h"
 
 //Get time (in ms)
 long long getTimeInMs(void)
