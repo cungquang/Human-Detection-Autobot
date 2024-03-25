@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define PORT 3000
+#define PORT 7777
 #define BUFFER_SIZE 1024
 #define CLIENT_PORT 3001
 #define CLIENT_IP "192.168.7.2"

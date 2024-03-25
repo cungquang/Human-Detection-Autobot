@@ -1,6 +1,18 @@
+import threading
+import socket
 import cv2
 
+SERVER_IP = '127.0.0.1'
+SERVER_PORT = 5555
+
 PIXEL_CONVERSION_RATE = 0.02645
+
+
+#########################
+#                       #
+#   Human Recognition   #
+#                       #
+#########################
 
 #Function for debugging:
 def debug_detect_human(image_path):
@@ -82,12 +94,67 @@ def identify_human_position(image_path):
 def convert_pixel_cm(pixel):
     return round(pixel*PIXEL_CONVERSION_RATE)
 
+
+
+#########################
+#                       #
+#      TCP Server       #
+#                       #
+#########################
+
+
+def handle_client(client_socket):
+    while True:
+        request = client_socket.recv(1024).decode('utf-8')
+
+        if not request:
+            break
+
+        #Handle message:
+        if request == "shutdown":
+            break
+
+        response = f"From: {request}"
+
+        client_socket.send(response.encode('utf-8'))
+
+    #close connection
+    client_socket.close()
+
+
+def start_tcp_server(host, port):
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket to the address and port
+    server_socket.bind((host, port))
+
+    # Listen for incoming connections
+    server_socket.listen(1)
+    print(f"Server is listening on {host}:{port}")
+
+    try:
+        while True:
+            # Accept incoming connections
+            client_socket, address = server_socket.accept()
+            print(f"[*] Accepted connection from {address[0]}:{address[1]}")
+
+            client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+            client_thread.start()
+
+    except:
+        print("\n[*] Server shutting down.")
+        server_socket.close()
+
+
+
 def main():
     # Example usage
-    image_path = './pictures/test1.JPG'
-    human_position_pixel = identify_human_position(image_path)
-    human_position_cm = convert_pixel_cm(human_position_pixel)
-    print(human_position_cm)
+    # image_path = './pictures/test1.JPG'
+    # human_position_pixel = identify_human_position(image_path)
+    # human_position_cm = convert_pixel_cm(human_position_pixel)
+    # print(human_position_cm)
+
+    start_tcp_server(SERVER_IP, SERVER_PORT)
 
 if __name__ == "__main__":
     main()
