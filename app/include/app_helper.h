@@ -2,6 +2,7 @@
 #define _APP_HELPER_H_
 
 #include <stdbool.h>
+#include <stdint.h>
 
 //Application level
 // This module provide a list of helper functions
@@ -10,5 +11,6 @@
 
 long long getTimeInMs(void);
 void sleepForMs(long long delayInMs);
+intmax_t getCurrentTimeNanoseconds();
 
 #endif
