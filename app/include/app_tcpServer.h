@@ -10,7 +10,7 @@
 *   - Clean up server 
 */
 
-void tcpServer_Init(int *terminate_flag);
-void tcpServer_cleanUp();
+void TcpServer_Init();
+void TcpServer_cleanUp();
 
 #endif

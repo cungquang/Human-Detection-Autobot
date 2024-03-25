@@ -4,6 +4,8 @@ import cv2
 
 SERVER_IP = '127.0.0.1'
 SERVER_PORT = 5555
+CLIENT_IP = '192.168.7.2'
+CLIENT_PORT = 7777
 
 PIXEL_CONVERSION_RATE = 0.02645
 
@@ -111,7 +113,7 @@ def handle_client(client_socket):
             break
 
         #Handle message:
-        if request == "shutdown":
+        if request == "terminated":
             break
 
         response = f"From: {request}"

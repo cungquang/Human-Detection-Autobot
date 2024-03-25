@@ -5,14 +5,18 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
-#define PORT 7777
 #define BUFFER_SIZE 1024
+
+//#define SERVER_IP '192.168.7.2'
+#define SERVER_PORT 7777
+#define CLIENT_IP '192.168.142.129'                    
+#define CLIENT_IP_TEST '127.0.0.1'
 #define CLIENT_PORT 3001
-#define CLIENT_IP "192.168.7.2"
 
 //terminate_flag
-static int *isTerminated;
+static int isTerminated;
 
 //Socket
 static int server_socket;
@@ -24,8 +28,8 @@ static pthread_t listenTo_thread;
 static pthread_t sendTo_thread;
 
 // Private function initiate
-void* tcpServer_receive();
-void* tcpServer_send();
+void* TcpServer_listenTo();
+void* TcpServer_send();
 
 
 /*
@@ -34,10 +38,9 @@ void* tcpServer_send();
 *****************************
 */
 
-/// @brief constructor to initiate TCP Server
-void tcpServer_Init(int *terminate_flag)
+
+void TcpServer_Init()
 {
-    isTerminated = terminate_flag;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(client_addr);
 
@@ -50,8 +53,9 @@ void tcpServer_Init(int *terminate_flag)
     //Initialize server address structure
     memset(&server_addr, '0', sizeof(server_addr));
     server_addr.sin_family = AF_INET;
+    //server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_port = htons(SERVER_PORT);
 
     //Bind socket to Address & PORT
     if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
@@ -60,12 +64,12 @@ void tcpServer_Init(int *terminate_flag)
     }
     
     //Listen for clients to connect
-    if (listen(server_socket, 5) < 0) {
+    if (listen(server_socket, 1) < 0) {
         perror("Listen failed");
         exit(EXIT_FAILURE);
     }
     
-    printf("Server listening on port %d...\n", PORT);
+    printf("Server listening on port  %d...\n", SERVER_PORT);
 
     //Wait for connection from Python Server
     while(!is_connected)
@@ -80,7 +84,7 @@ void tcpServer_Init(int *terminate_flag)
         inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
         //verify IP address
-        if(strcmp(client_ip, CLIENT_IP) != 0) 
+        if(strcmp(client_ip, CLIENT_IP_TEST) != 0) 
         {
             printf("Client IP invalid");
             close(client_socket);
@@ -91,14 +95,15 @@ void tcpServer_Init(int *terminate_flag)
             printf("Client IP %s connected to server successfully", CLIENT_IP);
         }
 
-        //Initiate thread - listenTo_thread & sendTo_thread
-        if(pthread_create(&listenTo_thread, NULL, tcpServer_receive, NULL)) 
+        //Initiate thread - TcpServer_listenTo
+        if(pthread_create(&listenTo_thread, NULL, TcpServer_listenTo, NULL)) 
         {
             perror("Failed to create listenTo_thread");
             exit(EXIT_FAILURE);
         }
 
-        if(pthread_create(&sendTo_thread, NULL, tcpServer_send, NULL))
+        //Initiate thread - TcpServer_send
+        if(pthread_create(&sendTo_thread, NULL, TcpServer_send, NULL))
         {
             perror("Failed to create sendTo_thread");
             exit(EXIT_FAILURE);
@@ -106,8 +111,8 @@ void tcpServer_Init(int *terminate_flag)
     }
 }
 
-/// @brief function to clean up TCP Server
-void tcpServer_cleanUp()
+
+void TcpServer_cleanUp()
 {
     // Join listenTo_thread & sendTo_thread
     pthread_join(listenTo_thread, NULL);
@@ -122,21 +127,25 @@ void tcpServer_cleanUp()
     close(server_socket);
 }
 
+void TcpServer_setTerminate()
+{
+    isTerminated = 1;
+}
+
 /*
 *****************************
 *          PRIVATE          *
 *****************************
 */
 
-/// @brief The thread handle listening to client
-/// @return void
-void* tcpServer_receive()
+//Thread to receive message
+void* TcpServer_listenTo()
 {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received;
 
     //While isTerminated == 0 -> keep waiting
-    while(!*isTerminated)
+    while(!isTerminated)
     {
         //Parse data into buffer
         bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
@@ -144,12 +153,12 @@ void* tcpServer_receive()
         //Handle message
         if(bytes_received > 0)
         {
-            buffer[bytes_received] = "\0";
+            buffer[bytes_received] = '\0';
 
             //Command to terminate proram
             if(strcmp(buffer, "terminated") == 0)
             {
-                *isTerminated = 1;
+                TcpServer_setTerminate();
             }
 
             //Do something here
@@ -169,15 +178,15 @@ void* tcpServer_receive()
     }
 
     //No clean up => will be handle outside
+    return NULL;
 }
 
-/// @brief The thread handles sending data to client
-/// @return void
-void* tcpServer_send()
+//Thread to send message
+void* TcpServer_send()
 {
     char buffer[BUFFER_SIZE];
 
-    while(!*isTerminated)
+    while(!isTerminated)
     {
         //Replace below code with actual process
         fgets(buffer, BUFFER_SIZE, stdin);
@@ -186,9 +195,10 @@ void* tcpServer_send()
         {
             //Fail to send message - server error -> terminate
             perror("Failed to send");
-            *isTerminated = 1;
+            TcpServer_setTerminate();
         }
     }
 
     //No clean up => will be handle outside
+    return NULL;
 }
