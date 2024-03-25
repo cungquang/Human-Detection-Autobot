@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "CMPT433_FinalProject",
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"in.h": "c"
+		}
+	}
+}
