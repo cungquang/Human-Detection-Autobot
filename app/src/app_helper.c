@@ -9,8 +9,6 @@
 #include <fcntl.h>      // for open()
 #include <unistd.h>     // for close()
 
-static double weighted = 0.001;
-
 //Get time (in ms)
 long long getTimeInMs(void)
 {
