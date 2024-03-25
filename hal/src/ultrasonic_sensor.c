@@ -9,8 +9,8 @@
 #include "hal_helper.h"
 #include "app_helper.h"
 
-#define ECHO_PATH_DIRECTION       "/sys/class/gpio/gpio66/direction" // p8.06
-#define ECHO_PATH_VALUE       "/sys/class/gpio/gpio66/value" // p8.06
+#define ECHO_PATH_DIRECTION       "/sys/class/gpio/gpio66/direction" // p8.07
+#define ECHO_PATH_VALUE       "/sys/class/gpio/gpio66/value" // p8.07
 #define TRIGGER_PATH_DIRECTION    "/sys/class/gpio/gpio67/direction" // p8.08
 #define TRIGGER_PATH_VALUE        "/sys/class/gpio/gpio67/value" // p8.08
 
