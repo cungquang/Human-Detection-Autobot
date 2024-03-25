@@ -2,9 +2,10 @@ import threading
 import socket
 import cv2
 
+isTerminated = 0
 SERVER_IP = '127.0.0.1'
 SERVER_PORT = 5555
-CLIENT_IP = '192.168.7.2'
+CLIENT_IP = '192.168.6.2'
 CLIENT_PORT = 7777
 
 PIXEL_CONVERSION_RATE = 0.02645
@@ -104,9 +105,14 @@ def convert_pixel_cm(pixel):
 #                       #
 #########################
 
+def handle_client_send(client_socket):
+    while not isTerminated:
+        response = input("Me: ")
+        client_socket.send(response.encode('utf-8'))
 
-def handle_client(client_socket):
-    while True:
+
+def handle_client_receive(client_socket):
+    while not isTerminated:
         request = client_socket.recv(1024).decode('utf-8')
 
         if not request:
@@ -114,48 +120,48 @@ def handle_client(client_socket):
 
         #Handle message:
         if request == "terminated":
+            client_socket.send(request.encode('utf-8'));
             break
 
-        response = f"From: {request}"
-
-        client_socket.send(response.encode('utf-8'))
+        print("From: ", request)
 
     #close connection
     client_socket.close()
 
 
 def start_tcp_server(host, port):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Bind the socket to the address and port
-    server_socket.bind((host, port))
-
-    # Listen for incoming connections
-    server_socket.listen(1)
-    print(f"Server is listening on {host}:{port}")
+    # Create a TCP/IP socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        while True:
-            # Accept incoming connections
-            client_socket, address = server_socket.accept()
-            print(f"[*] Accepted connection from {address[0]}:{address[1]}")
+        # Connect the socket to the server
+        client_address = (CLIENT_IP, CLIENT_PORT)
+        client_socket.connect(client_address)
 
-            client_thread = threading.Thread(target=handle_client, args=(client_socket,))
-            client_thread.start()
+        #initiate threads
+        receive_thread = threading.Thread(target=handle_client_receive, args=(client_socket,))
+        send_thread = threading.Thread(target=handle_client_send, args=(client_socket,))
 
-    except:
+        #start both thread
+        receive_thread.start()
+        send_thread.start()
+
+        # Wait for both threads to finish
+        receive_thread.join()
+        send_thread.join()
+
+    finally:
         print("\n[*] Server shutting down.")
-        server_socket.close()
+        client_socket.close()
 
-
-
-def main():
-    # Example usage
+def process_image():
     # image_path = './pictures/test1.JPG'
     # human_position_pixel = identify_human_position(image_path)
     # human_position_cm = convert_pixel_cm(human_position_pixel)
     # print(human_position_cm)
+    return 
 
+def main():
     start_tcp_server(SERVER_IP, SERVER_PORT)
 
 if __name__ == "__main__":

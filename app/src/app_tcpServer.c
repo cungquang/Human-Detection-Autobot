@@ -8,12 +8,7 @@
 #include <arpa/inet.h>
 
 #define BUFFER_SIZE 1024
-
-//#define SERVER_IP '192.168.7.2'
 #define SERVER_PORT 7777
-#define CLIENT_IP '192.168.142.129'                    
-#define CLIENT_IP_TEST '127.0.0.1'
-#define CLIENT_PORT 3001
 
 //terminate_flag
 static int isTerminated;
@@ -46,7 +41,7 @@ void TcpServer_Init()
 
     //Create socket
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("Socket creation failed");
+        perror("Socket creation failed\n");
         exit(EXIT_FAILURE);
     }
 
@@ -59,23 +54,23 @@ void TcpServer_Init()
 
     //Bind socket to Address & PORT
     if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Bind failed");
+        perror("Bind failed\n");
         exit(EXIT_FAILURE);
     }
     
     //Listen for clients to connect
     if (listen(server_socket, 1) < 0) {
-        perror("Listen failed");
+        perror("Listen failed\n");
         exit(EXIT_FAILURE);
     }
     
-    printf("Server listening on port  %d...\n", SERVER_PORT);
+    printf("Server listening on port  %s:%d...\n", inet_ntoa(server_addr.sin_addr), htons(server_addr.sin_port));
 
     //Wait for connection from Python Server
     while(!is_connected)
     {
         if ((client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len)) < 0) {
-            perror("Accept failed");
+            perror("Accept failed\n");
             exit(EXIT_FAILURE);
         }
 
@@ -83,29 +78,20 @@ void TcpServer_Init()
         char client_ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
-        //verify IP address
-        if(strcmp(client_ip, CLIENT_IP_TEST) != 0) 
-        {
-            printf("Client IP invalid");
-            close(client_socket);
-            continue;
-        }
-        else{
-            is_connected = 1;
-            printf("Client IP %s connected to server successfully", CLIENT_IP);
-        }
+        is_connected = 1;
+        printf("Client IP %s connected to server successfully\n", CLIENT_IP);
 
         //Initiate thread - TcpServer_listenTo
         if(pthread_create(&listenTo_thread, NULL, TcpServer_listenTo, NULL)) 
         {
-            perror("Failed to create listenTo_thread");
+            perror("Failed to create listenTo_thread\n");
             exit(EXIT_FAILURE);
         }
 
         //Initiate thread - TcpServer_send
         if(pthread_create(&sendTo_thread, NULL, TcpServer_send, NULL))
         {
-            perror("Failed to create sendTo_thread");
+            perror("Failed to create sendTo_thread\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -162,18 +148,18 @@ void* TcpServer_listenTo()
             }
 
             //Do something here
-            printf("Client said: %s", buffer);
+            printf("Client : %s\n", buffer);
         } 
         //Not receive data -> disconnect
         else if(bytes_received == 0)
         {
             //Do something here
-            printf("Client has been disconnected");
+            printf("Client has been disconnected\n");
         }
         else
         {
             //Do something here
-            printf("Message error");
+            printf("Message error\n");
         }
     }
 
@@ -189,12 +175,12 @@ void* TcpServer_send()
     while(!isTerminated)
     {
         //Replace below code with actual process
-        fgets(buffer, BUFFER_SIZE, stdin);
+        printf("Me: %s\n", fgets(buffer, BUFFER_SIZE, stdin));
 
         if(send(client_socket, buffer, strlen(buffer), 0) < 0)
         {
             //Fail to send message - server error -> terminate
-            perror("Failed to send");
+            perror("Failed to send\n");
             TcpServer_setTerminate();
         }
     }
