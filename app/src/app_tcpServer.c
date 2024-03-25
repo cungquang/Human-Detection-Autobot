@@ -1,4 +1,5 @@
 #include <stdio.h>
+/*
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -28,11 +29,10 @@ void* tcpServer_receive();
 void* tcpServer_send();
 
 
-/*
+
 *****************************
 *           PUBLIC          *
 *****************************
-*/
 
 /// @brief constructor to initiate TCP Server
 void tcpServer_Init(int *terminate_flag)
@@ -122,11 +122,10 @@ void tcpServer_cleanUp()
     close(server_socket);
 }
 
-/*
+
 *****************************
 *          PRIVATE          *
 *****************************
-*/
 
 /// @brief The thread handle listening to client
 /// @return void
@@ -191,4 +190,4 @@ void* tcpServer_send()
     }
 
     //No clean up => will be handle outside
-}
+}*/
