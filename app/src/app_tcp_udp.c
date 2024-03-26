@@ -22,9 +22,10 @@
 static int python_server_socket;
 
 //Initiate private function
-static void Tcp_setMetadata(long image_size, FILE *image_file);
+static long Tcp_getSizeOfFile(FILE *image_file);
+static void Tcp_sendMetadata(long image_size, FILE *image_file);
 static int Tcp_getCofirmation(FILE *image_file);
-static void Tcp_sendChunkOfImage(FILE *image_file);
+static void Tcp_sendChunksOfImage(FILE *image_file);
 
 
 /*
@@ -65,28 +66,21 @@ void Tcp_cleanUp()
 void Tcp_sendImage(char *imagePath)
 {
     // Read image
-    FILE *image_file = fopen(imagePath, "rb");
-    if (image_file == NULL) {
-        perror("Failed to open image file\n");
-        return;
+    FILE *image_file = image_file = fopen(imagePath, "rb");
+    long image_size = Tcp_getSizeOfFile(image_file);
+    if(image_size == -1)
+    {
+        exit(EXIT_FAILURE);
     }
 
-    //Read size of file
-    fseek(image_file, 0, SEEK_END);
-    long image_size = ftell(image_file);
-    fseek(image_file, 0, SEEK_SET);                 //move back to the head of file
-
     //Send metadata - image size
-    Tcp_setMetadata(image_size, image_file);
+    Tcp_sendMetadata(image_size, image_file);
 
     //Wait for confirmation from server
     int canStart = Tcp_getCofirmation(image_file);
 
     //If ready to proceed -> send image
-    if(canStart)
-    {
-        Tcp_sendChunkOfImage(image_file);
-    }
+    if(canStart) Tcp_sendChunksOfImage(image_file);
     
     //Wait for response - distance_to_center
 
@@ -101,8 +95,23 @@ void Tcp_sendImage(char *imagePath)
 *****************************
 */
 
+//Load image from folder
+static long Tcp_getSizeOfFile(FILE *image_file)
+{
+    if (image_file == NULL) {
+        perror("Failed to open image file\n");
+        return -1;
+    }
+
+    //Read size of file
+    fseek(image_file, 0, SEEK_END);
+    long image_size = ftell(image_file);
+    fseek(image_file, 0, SEEK_SET);                 //move back to the head of file
+    return image_size;
+}
+
 //send metadata to the server
-static void Tcp_setMetadata(long image_size, FILE *image_file)
+static void Tcp_sendMetadata(long image_size, FILE *image_file)
 {
     char image_size_str[20];
     memset(image_size_str, 0, sizeof(image_size_str));
@@ -142,7 +151,7 @@ static int Tcp_getCofirmation(FILE *image_file)
 }
 
 //send image to server
-static void Tcp_sendChunkOfImage(FILE *image_file)
+static void Tcp_sendChunksOfImage(FILE *image_file)
 {
     //Send the image data - use fread -> read into memory
     char buffer[IMG_BUFFER];
