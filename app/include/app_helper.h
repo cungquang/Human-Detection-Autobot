@@ -8,6 +8,5 @@
 
 long long getTimeInMs(void);
 void sleepForMs(long long delayInMs);
-unsigned char* read_image_inByte(const char *input_path, long *filesize);
 
 #endif

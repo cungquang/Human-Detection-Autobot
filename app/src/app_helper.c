@@ -32,27 +32,3 @@ void sleepForMs(long long delayInMs)
     struct timespec reqDelay = {seconds, nanoseconds};
     nanosleep(&reqDelay, (struct timespec *) NULL);
 }
-
-unsigned char* read_image_inByte(char *input_path, long *filesize) {
-    FILE *fp = fopen(input_path, "rb");
-    if (fp == NULL) {
-        perror("Error opening file");
-        return NULL;
-    }
-
-    fseek(fp, 0, SEEK_END);
-    *filesize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    unsigned char *image_data = (unsigned char *)malloc(*filesize);
-    if (image_data == NULL) {
-        fclose(fp);
-        perror("Memory allocation failed");
-        return NULL;
-    }
-
-    fread(image_data, 1, *filesize, fp);
-    fclose(fp);
-
-    return image_data;
-}
