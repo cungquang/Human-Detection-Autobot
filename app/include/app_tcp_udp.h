@@ -9,7 +9,8 @@
 *   - Create 2 threads: receive & send 
 *   - Clean up server 
 */
-
+void Tcp_init();
+void Tcp_cleanUp();
 void Tcp_sendImage(char *imagePath);
 
 #endif

@@ -29,12 +29,8 @@ static int python_server_socket;
 *****************************
 */
 
-void Tcp_sendImage(char *imagePath)
+void Tcp_Init()
 {
-    //Read image
-    long image_size = 0;
-    unsigned char *image_inByte = read_image_inByte(imagePath, &image_size);
-
     //Connect to TCP to send image
     struct sockaddr_in server_addr;
 
@@ -49,10 +45,22 @@ void Tcp_sendImage(char *imagePath)
 
     // Connect to server
     if (connect(python_server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-        perror("Connection failed");
-        free(image_inByte);
+        perror("Connection failed\n");
         exit(EXIT_FAILURE);
     }
+}
+
+void Tcp_cleanUp()
+{
+    // Clean up
+    close(python_server_socket);
+}
+
+void Tcp_sendImage(char *imagePath)
+{
+    //Read image
+    long image_size = 0;
+    unsigned char *image_inByte = read_image_inByte(imagePath, &image_size);
 
     // Send image data to server
     size_t bytes_sent = 0;
@@ -61,7 +69,7 @@ void Tcp_sendImage(char *imagePath)
         // remain < buffer => send all OTHERWISE send == IMG_BUFFER
         size_t chunk_size = remaining_bytes < IMG_BUFFER ? remaining_bytes : IMG_BUFFER;
         if (send(python_server_socket, image_inByte + bytes_sent, chunk_size, 0) == -1) {
-            perror("Send failed");
+            perror("Send failed\n");
             free(image_inByte);
             close(python_server_socket);
             return;
@@ -75,18 +83,23 @@ void Tcp_sendImage(char *imagePath)
     // Send "end" -> end the process
     const char *end_message = "end";
     if (send(python_server_socket, end_message, strlen(end_message), 0) == -1) {
-        perror("Send failed");
+        perror("Send failed\n");
         free(image_inByte);
         close(python_server_socket);
         return;
     }
 
-
     printf("Image sent to server\n");
-
-    // Clean up
-    close(python_server_socket);
     free(image_inByte);
+
+    // Wait for response from server
+    char response[IMG_BUFFER];
+    ssize_t bytes_received = recv(python_server_socket, response, IMG_BUFFER - 1, 0);
+    if (bytes_received == -1) {
+        perror("Receive failed\n");
+        close(python_server_socket);
+        return;
+    }
 }
 
 

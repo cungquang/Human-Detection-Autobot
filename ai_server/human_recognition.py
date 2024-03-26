@@ -134,6 +134,7 @@ def handle_client_image(client_socket):
 
     #send signal
     message = "Image received successfully!"
+    print(message);
     client_socket.sendall(message.encode())    
     client_socket.close()
 
