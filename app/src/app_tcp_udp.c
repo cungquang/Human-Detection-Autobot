@@ -8,8 +8,7 @@
 #include <arpa/inet.h>
 #include "../include/app_helper.h"
 
-#define MSG_BUFFER 1024
-#define IMG_BUFFER 4096
+#define IMG_BUFFER 1024
 
 //UDP Server to receive command
 #define UDP_SERVER_IP "192.168.7.2"
@@ -69,25 +68,54 @@ void Tcp_sendImage(char *imagePath)
 
     //Read size of file
     fseek(image_file, 0, SEEK_END);
-    long image_size = ftell(image_file);
-    rewind(image_file);                     //move back to the head of file
+    int image_size = ftell(image_file);
+    fseek(image_file, 0, SEEK_SET);                 //move back to the head of file
 
     //Send metadata - image size
-    if (send(python_server_socket, &image_size, sizeof(image_size), 0) != sizeof(image_size)) {
-        perror("Metadata send failed");
+    char image_size_str[20];
+    memset(image_size_str, 0, sizeof(image_size_str));
+    snprintf(image_size_str, sizeof(image_size_str), "%d", image_size);
+
+    printf("Sending image size: %s\n", image_size_str);
+    if (send(python_server_socket, image_size_str, strlen(image_size_str), 0) < 0) {
+        perror("Failed to send image size\n");
         fclose(image_file);
-        exit(EXIT_FAILURE);
+        return;
     }
+
+    //Receive confirmation from server
+    char confirmation[5]; // Assuming maximum length of confirmation message is 5 characters
+    ssize_t bytes_received = recv(python_server_socket, confirmation, sizeof(confirmation) - 1, 0);
+    if (bytes_received == -1) {
+        perror("Failed to receive confirmation from server\n");
+        fclose(image_file);
+        return;
+    }
+    confirmation[bytes_received] = '\0'; // Null-terminate the received message
+
+    // Check if confirmation message is "okay"
+    if (strcmp(confirmation, "okay") != 0) {
+        fprintf(stderr, "Unexpected confirmation message from server: %s\n", confirmation);
+        fclose(image_file);
+        return;
+    }
+
 
     //Send the image data - use fread -> read into memory
     char buffer[IMG_BUFFER];
+    memset(buffer, 0, sizeof(buffer));
     size_t bytes_read;
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), image_file)) > 0) {
+        
+        //Send data
         if ((ssize_t)send(python_server_socket, buffer, bytes_read, 0) != (ssize_t)bytes_read) {
             perror("Image data send failed");
             fclose(image_file);
             exit(EXIT_FAILURE);
         }
+
+        // Clear the buffer after each read
+        memset(buffer, 0, sizeof(buffer));
     }
 
     // Step 6: Close resources and connection

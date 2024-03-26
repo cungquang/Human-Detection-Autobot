@@ -1,7 +1,9 @@
 import threading
 import socket
 import cv2
+import traceback
 from PIL import Image
+import numpy as np
 
 #termination flag
 isTerminated = 0
@@ -15,9 +17,9 @@ CLIENT_IP = '192.168.7.2'
 CLIENT_PORT = 7777
 
 PIXEL_CONVERSION_RATE = 0.02645
-IMG_BUFFER = 4096           
+IMG_BUFFER = 8024         
 
-
+IMG_PATH = "received_image.JPEG"
 
 #########################
 #                       #
@@ -68,8 +70,8 @@ def convert_pixel_cm(pixel):
 def process_image(image_path):
     human_position_pixel = identify_human_position(image_path)
     human_position_cm = convert_pixel_cm(human_position_pixel)
-    print(human_position_cm)
-    return 
+
+    return human_position_cm 
 
 #########################
 #                       #
@@ -77,40 +79,50 @@ def process_image(image_path):
 #                       #
 #########################
 
+def save_image_from_bytes_with_opencv(image_data, filename):
+    image_np = np.frombuffer(image_data, dtype=np.uint8)
+    image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+    cv2.imwrite(filename, image)
 
-def handle_client_image(client_socket):
 
-    #Read Metadata - size of the image => convert into integer
-    image_size_bytes = client_socket.recv(IMG_BUFFER)
-    image_size = int.from_bytes(image_size_bytes, byteorder='big')
-
-    #Send confirm => trigger receive image
-
+def handle_client_image(client_connection):
     #Receive data in chunk - then combine
     image_data = b""
     bytes_received = 0
-
-    #keep read file until == image_size
-    while bytes_received < image_size:
-        chunk = client_socket.recv(min(IMG_BUFFER, image_size - bytes_received))
-        if not chunk:
-            break
-        image_data += chunk
-        bytes_received += len(chunk)
     
-    print("Image received from client.")
+    try:
+        # Read the bytes representing the image size
+        image_size_bytes = client_connection.recv(20)
+        print("original data: ", image_size_bytes)
 
-    with open("received_image.JPEG", "wb") as file:
-        file.write(image_data)
+        image_size_str = image_size_bytes.decode('utf-8')
+        image_size = int(image_size_str)
 
-    # Open image using Pillow
-    image = Image.open("received_image.JPG")
-    image.save("received_image.JPEG", "JPEG")
+        #send message trigger sending data
+        client_connection.send(b"okay")
 
-    #use AI to read the file 
+        #keep read file until == image_size
+        while bytes_received < image_size:
+            chunk = client_connection.recv(min(IMG_BUFFER, image_size - bytes_received))
+            if not chunk:
+                break
+            image_data += chunk
+            bytes_received += len(chunk)
+        
+        print("Total bytes received:", len(image_data))
 
+        # with open("received_image.jpg", "wb") as file:
+        #     file.write(image_data)
 
-    #send back the result
+        # # Open image using Pillow
+        # image = Image.open("received_image.jpg")
+        # image.save("received_image.jpg", "JPEG")
+
+        save_image_from_bytes_with_opencv(image_data, "received_image.JPG")
+    except Exception as e:
+        # Print detailed information about the exception
+        print("An error occurred:", e)
+        #traceback.print_exc()
 
 
 def start_tcp_server(host, port):
@@ -124,18 +136,17 @@ def start_tcp_server(host, port):
     try:
         while not isTerminated:
             #accept connection
-            client_socket, client_address = server_socket.accept();
+            client_connection, client_address = server_socket.accept()
 
-            #initiate threads
-            # Start a new thread to handle the client
-            client_thread = threading.Thread(target=handle_client_image, args=(client_socket,))
+            #Start a new thread to handle the client
+            client_thread = threading.Thread(target=handle_client_image, args=(client_connection,))
             client_thread.start()
 
-            # Wait for both threads to finish
+            #Wait for both threads to finish
             client_thread.join()
-            
+
             #close connection
-            client_socket.close()
+            client_connection.close()
 
     except KeyboardInterrupt:
         print("Server shutting down.")

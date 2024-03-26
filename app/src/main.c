@@ -5,7 +5,7 @@
 int main() 
 {
     //printf("Hello World");
-    char *imagePath = "./test2.JPG";
+    char *imagePath = "./test5.JPG";
     Tcp_init();
     Tcp_sendImage(imagePath);
     Tcp_cleanUp();
