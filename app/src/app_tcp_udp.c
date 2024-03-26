@@ -54,14 +54,6 @@ void Tcp_sendImage(char *imagePath)
         exit(EXIT_FAILURE);
     }
 
-    // Send "start" -> trigger the process
-    const char *start_message = "start";
-    if (send(python_server_socket, start_message, strlen(start_message), 0) == -1) {
-        perror("Send failed");
-        free(image_inByte);
-        exit(EXIT_FAILURE);
-    }
-
     // Send image data to server
     size_t bytes_sent = 0;
     size_t remaining_bytes = image_size;

@@ -5,7 +5,7 @@
 int main() 
 {
     //printf("Hello World");
-    char *imagePath = "ai_server/pictures/test1.JPG";
+    char *imagePath = "./test1.JPG";
     Tcp_sendImage(imagePath);
 
     return 0;

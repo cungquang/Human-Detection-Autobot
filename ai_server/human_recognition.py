@@ -111,21 +111,10 @@ def convert_pixel_cm(pixel):
 #                       #
 #########################
 
-def handle_client_send(client_socket):
-
-    client_socket.close()
 
 def handle_client_image(client_socket):
-    isStart = 0
     isDone = 1
     image_data = b""
-    
-    #wait for signal to start:
-    while not isStart:
-        request = client_socket.recv(MSG_BUFFER).decode('utf-8')
-        if request == "start":
-            isStart = 1
-            isDone = 0
 
     #start receiving picture
     while not isDone:
@@ -164,7 +153,7 @@ def start_tcp_server(host, port):
 
             #initiate threads
             # Start a new thread to handle the client
-            client_thread = threading.Thread(target=handle_client_image, args=(client_socket, client_address))
+            client_thread = threading.Thread(target=handle_client_image, args=(client_socket,))
             client_thread.start()
 
             # Wait for both threads to finish
