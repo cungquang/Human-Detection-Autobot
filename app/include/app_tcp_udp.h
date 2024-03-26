@@ -11,6 +11,6 @@
 */
 void Tcp_init();
 void Tcp_cleanUp();
-void Tcp_sendImage(char *imagePath);
+int Tcp_sendImage(char *imagePath);
 
 #endif

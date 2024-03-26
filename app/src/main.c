@@ -7,8 +7,9 @@ int main()
     //printf("Hello World");
     char *imagePath = "./test5.JPG";
     Tcp_init();
-    Tcp_sendImage(imagePath);
+    int result_fromAI = Tcp_sendImage(imagePath);
     Tcp_cleanUp();
 
+    printf("Result from AI: %dcm\n", result_fromAI);
     return 0;
 }

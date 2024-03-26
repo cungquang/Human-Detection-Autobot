@@ -2,7 +2,7 @@ import threading
 import socket
 import cv2
 import traceback
-from PIL import Image
+import struct
 import numpy as np
 
 #termination flag
@@ -19,7 +19,7 @@ CLIENT_PORT = 7777
 PIXEL_CONVERSION_RATE = 0.02645
 IMG_BUFFER = 8024         
 
-IMG_PATH = "received_image.JPEG"
+IMG_PATH = "received_image.JPG"
 
 #########################
 #                       #
@@ -28,9 +28,9 @@ IMG_PATH = "received_image.JPEG"
 #########################
 
 #Source: ChatGPT
-def detect_human(image_path):
+def detect_human(image):
+    #load pre-trained data
     human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
-    image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     humans = human_cascade.detectMultiScale(gray, 1.1, 4)
 
@@ -42,33 +42,36 @@ def detect_human(image_path):
         #print("No human detected in the image.")
         return None
 
-def get_gap_from_center(human_center_x, image_path):
-    image = cv2.imread(image_path)
+#get the position of the center line in the picture
+def get_gap_from_center(human_center_x, image):
+    #image = cv2.imread(image_path)
     image_width = image.shape[1]
     center = image_width / 2
     gap = human_center_x - center
 
     return gap
 
-def identify_human_position(image_path):
-    human_center_x = detect_human(image_path)
+#identify position of human in the picture
+def identify_human_position(image):
+    human_center_x = detect_human(image)
 
     #If found human
     if human_center_x is not None:
         #Return position: left -> negative; center -> 0; right -> positive
-        return get_gap_from_center(human_center_x, image_path)
+        return get_gap_from_center(human_center_x, image)
     
     else:
         #No human found OR unable to identify human
         return None
 
-#on average 1 pixel = 0.02645 cm
+#convert pixel to cm: average 1 pixel = 0.02645 cm
 def convert_pixel_cm(pixel):
     return round(pixel*PIXEL_CONVERSION_RATE)
 
-
+#processing image
 def process_image(image_path):
-    human_position_pixel = identify_human_position(image_path)
+    image = cv2.imread(image_path)
+    human_position_pixel = identify_human_position(image)
     human_position_cm = convert_pixel_cm(human_position_pixel)
 
     return human_position_cm 
@@ -79,12 +82,13 @@ def process_image(image_path):
 #                       #
 #########################
 
+#save image (in byte) to the file
 def save_image_from_bytes_with_opencv(image_data, filename):
     image_np = np.frombuffer(image_data, dtype=np.uint8)
     image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
     cv2.imwrite(filename, image)
 
-
+#thread to read image
 def handle_client_image(client_connection):
     #Receive data in chunk - then combine
     image_data = b""
@@ -93,8 +97,6 @@ def handle_client_image(client_connection):
     try:
         # Read the bytes representing the image size
         image_size_bytes = client_connection.recv(20)
-        print("original data: ", image_size_bytes)
-
         image_size_str = image_size_bytes.decode('utf-8')
         image_size = int(image_size_str)
 
@@ -111,7 +113,14 @@ def handle_client_image(client_connection):
         
         print("Total bytes received:", len(image_data))
 
-        save_image_from_bytes_with_opencv(image_data, "received_image.JPG")
+        #Save iamge data into the file
+        save_image_from_bytes_with_opencv(image_data, IMG_PATH)
+
+        #call AI read image
+        distance_to_human = process_image(IMG_PATH)
+        print("Distance to nearest human: ", distance_to_human)
+        distance_bytes = struct.pack("!i", distance_to_human)
+        client_connection.send(distance_bytes)
     except Exception as e:
         print("An error occurred:", e)
         traceback.print_exc()

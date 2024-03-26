@@ -26,6 +26,7 @@ static long Tcp_getSizeOfFile(FILE *image_file);
 static void Tcp_sendMetadata(long image_size, FILE *image_file);
 static int Tcp_getCofirmation(FILE *image_file);
 static void Tcp_sendChunksOfImage(FILE *image_file);
+static int Tcp_getGapFromCenter();
 
 
 /*
@@ -60,10 +61,10 @@ void Tcp_init()
 void Tcp_cleanUp()
 {
     // Clean up
-    close(python_server_socket);
+    if(python_server_socket) close(python_server_socket);
 }
 
-void Tcp_sendImage(char *imagePath)
+int Tcp_sendImage(char *imagePath)
 {
     // Read image
     FILE *image_file = image_file = fopen(imagePath, "rb");
@@ -83,9 +84,10 @@ void Tcp_sendImage(char *imagePath)
     if(canStart) Tcp_sendChunksOfImage(image_file);
     
     //Wait for response - distance_to_center
-
+    int result_fromAI = Tcp_getGapFromCenter();
 
     fclose(image_file);
+    return result_fromAI;
 }
 
 
@@ -94,6 +96,7 @@ void Tcp_sendImage(char *imagePath)
 *          PRIVATE          *
 *****************************
 */
+
 
 //Load image from folder
 static long Tcp_getSizeOfFile(FILE *image_file)
@@ -129,7 +132,8 @@ static void Tcp_sendMetadata(long image_size, FILE *image_file)
 static int Tcp_getCofirmation(FILE *image_file)
 {
     //Receive confirmation from server
-    char confirmation[1000]; // Assuming maximum length of confirmation message is 5 characters
+    char confirmation[10]; // Assuming maximum length of confirmation message is 5 characters
+    memset(confirmation, 0, sizeof(confirmation));
     ssize_t bytes_received = recv(python_server_socket, confirmation, sizeof(confirmation) - 1, 0);
     if (bytes_received == -1) {
         perror("Failed to receive confirmation from server\n");
@@ -148,6 +152,18 @@ static int Tcp_getCofirmation(FILE *image_file)
     }
 
     return 1;
+}
+
+static int Tcp_getGapFromCenter()
+{
+    int received_value = 0;
+    ssize_t bytes_received = recv(python_server_socket, &received_value, sizeof(received_value), 0);
+    if (bytes_received != sizeof(received_value)) {
+        // Handle error
+    } 
+
+    int distance_from_center = ntohl(received_value);
+    return distance_from_center;
 }
 
 //send image to server
