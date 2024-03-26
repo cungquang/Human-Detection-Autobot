@@ -70,25 +70,16 @@ void Tcp_sendImage(char *imagePath)
     //Read size of file
     fseek(image_file, 0, SEEK_END);
     long image_size = ftell(image_file);
-    rewind(image_file);
+    rewind(image_file);                     //move back to the head of file
 
-
-    // Allocate memory to store image data
-    unsigned char *image_inByte = (unsigned char *)malloc(image_size);
-    if (image_inByte == NULL) {
-        perror("Memory allocation failed\n");
-        fclose(image_file);
-        return;
-    }
-
-    // Step 4: Send metadata (image size)
+    //Send metadata - image size
     if (send(python_server_socket, &image_size, sizeof(image_size), 0) != sizeof(image_size)) {
         perror("Metadata send failed");
         fclose(image_file);
         exit(EXIT_FAILURE);
     }
 
-    // Step 5: Send the image data
+    //Send the image data - use fread -> read into memory
     char buffer[IMG_BUFFER];
     size_t bytes_read;
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), image_file)) > 0) {
@@ -98,7 +89,6 @@ void Tcp_sendImage(char *imagePath)
             exit(EXIT_FAILURE);
         }
     }
-
 
     // Step 6: Close resources and connection
     fclose(image_file);

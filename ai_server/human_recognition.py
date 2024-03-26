@@ -3,7 +3,6 @@ import socket
 import cv2
 from PIL import Image
 
-
 #termination flag
 isTerminated = 0
 
@@ -16,55 +15,15 @@ CLIENT_IP = '192.168.7.2'
 CLIENT_PORT = 7777
 
 PIXEL_CONVERSION_RATE = 0.02645
-MSG_BUFFER = 1024
 IMG_BUFFER = 4096           
+
+
 
 #########################
 #                       #
 #   Human Recognition   #
 #                       #
 #########################
-
-#Function for debugging:
-def debug_detect_human(image_path):
-    # Load pre-trained human detector
-    human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
-
-    # Load image
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Detect humans in the image
-    humans = human_cascade.detectMultiScale(gray, 1.1, 4)
-
-    if len(humans) > 0:
-        # Get the coordinates of the first detected human
-        x, y, w, h = humans[0]
-
-        # Draw rectangle around the detected human
-        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-        # Calculate the center of the detected human
-        human_center_x = x + w // 2
-        human_center_y = y + h // 2
-
-        # Calculate the center of the image
-        image_center_x = image.shape[1] // 2
-        image_center_y = image.shape[0] // 2
-
-        # Calculate the distance from human to the center of the image
-        distance = np.sqrt((human_center_x - image_center_x)**2 + (human_center_y - image_center_y)**2)
-
-        # Display distance on the image
-        cv2.putText(image, f"Distance: {image_center_x:.2f} pixels", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-
-        # Show the image with the detected human and distance
-        cv2.imshow("Human Detection", image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    else:
-        print("No human detected in the image.")
-
 
 #Source: ChatGPT
 def detect_human(image_path):
@@ -106,6 +65,11 @@ def convert_pixel_cm(pixel):
     return round(pixel*PIXEL_CONVERSION_RATE)
 
 
+def process_image(image_path):
+    human_position_pixel = identify_human_position(image_path)
+    human_position_cm = convert_pixel_cm(human_position_pixel)
+    print(human_position_cm)
+    return 
 
 #########################
 #                       #
@@ -115,13 +79,18 @@ def convert_pixel_cm(pixel):
 
 
 def handle_client_image(client_socket):
+
+    #Read Metadata - size of the image => convert into integer
     image_size_bytes = client_socket.recv(IMG_BUFFER)
     image_size = int.from_bytes(image_size_bytes, byteorder='big')
-    print("Image size:", image_size)
 
-    # Step 6: Receive the image data
+    #Send confirm => trigger receive image
+
+    #Receive data in chunk - then combine
     image_data = b""
     bytes_received = 0
+
+    #keep read file until == image_size
     while bytes_received < image_size:
         chunk = client_socket.recv(min(IMG_BUFFER, image_size - bytes_received))
         if not chunk:
@@ -131,16 +100,17 @@ def handle_client_image(client_socket):
     
     print("Image received from client.")
 
-    with open("received_image.JPG", "wb") as file:
+    with open("received_image.JPEG", "wb") as file:
         file.write(image_data)
 
     # Open image using Pillow
     image = Image.open("received_image.JPG")
+    image.save("received_image.JPEG", "JPEG")
 
-    # Save as JPEG
-    image.save("received_image.JPG", "JPEG")
+    #use AI to read the file 
 
-     
+
+    #send back the result
 
 
 def start_tcp_server(host, port):
@@ -172,13 +142,6 @@ def start_tcp_server(host, port):
     finally:
         # Close the server socket
         server_socket.close()
-
-def process_image():
-    # image_path = './pictures/test1.JPG'
-    # human_position_pixel = identify_human_position(image_path)
-    # human_position_cm = convert_pixel_cm(human_position_pixel)
-    # print(human_position_cm)
-    return 
 
 def main():
     start_tcp_server(SERVER_IP, SERVER_PORT)
