@@ -19,9 +19,6 @@
 #define PYTHON_SERVER_IP "192.168.148.129"
 #define PYTHON_SERVER_PORT 6666
 
-//terminate_flag
-static int isTerminated;
-
 //Socket
 static int python_server_socket;
 
@@ -36,7 +33,7 @@ void Tcp_sendImage(char *imagePath)
 {
     //Read image
     long image_size = 0;
-    unsigned char image_inByte = read_image_inByte(imagePath, &image_size);
+    unsigned char *image_inByte = read_image_inByte(imagePath, &image_size);
 
     //Connect to TCP to send image
     struct sockaddr_in server_addr;
@@ -68,7 +65,7 @@ void Tcp_sendImage(char *imagePath)
     // Send image data to server
     size_t bytes_sent = 0;
     size_t remaining_bytes = image_size;
-    while (bytes_sent < image_size) {
+    while (bytes_sent < (size_t)image_size) {
         // remain < buffer => send all OTHERWISE send == IMG_BUFFER
         size_t chunk_size = remaining_bytes < IMG_BUFFER ? remaining_bytes : IMG_BUFFER;
         if (send(python_server_socket, image_inByte + bytes_sent, chunk_size, 0) == -1) {

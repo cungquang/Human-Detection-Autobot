@@ -1,5 +1,5 @@
-#ifndef _APP_TCPSERVER_H_
-#define _APP_TCPSERVER_H_
+#ifndef _APP_TCP_UDP_H_
+#define _APP_TCP_UDP_H_
 
 /*
 * Name: app_tcpServer
@@ -10,6 +10,6 @@
 *   - Clean up server 
 */
 
-void Tcp_sendImage(char *imagePath)
+void Tcp_sendImage(char *imagePath);
 
 #endif
