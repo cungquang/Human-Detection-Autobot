@@ -29,7 +29,7 @@ static int python_server_socket;
 *****************************
 */
 
-void Tcp_Init()
+void Tcp_init()
 {
     //Connect to TCP to send image
     struct sockaddr_in server_addr;
@@ -48,6 +48,8 @@ void Tcp_Init()
         perror("Connection failed\n");
         exit(EXIT_FAILURE);
     }
+
+    printf("Successfully connected to server %s:%d\n", inet_ntoa(server_addr.sin_addr), ntohs(server_addr.sin_port));
 }
 
 void Tcp_cleanUp()
@@ -58,48 +60,48 @@ void Tcp_cleanUp()
 
 void Tcp_sendImage(char *imagePath)
 {
-    //Read image
-    long image_size = 0;
-    unsigned char *image_inByte = read_image_inByte(imagePath, &image_size);
+    // Read image
+    FILE *image_file = fopen(imagePath, "rb");
+    if (image_file == NULL) {
+        perror("Failed to open image file\n");
+        return;
+    }
 
-    // Send image data to server
-    size_t bytes_sent = 0;
-    size_t remaining_bytes = image_size;
-    while (bytes_sent < (size_t)image_size) {
-        // remain < buffer => send all OTHERWISE send == IMG_BUFFER
-        size_t chunk_size = remaining_bytes < IMG_BUFFER ? remaining_bytes : IMG_BUFFER;
-        if (send(python_server_socket, image_inByte + bytes_sent, chunk_size, 0) == -1) {
-            perror("Send failed\n");
-            free(image_inByte);
-            close(python_server_socket);
-            return;
+    //Read size of file
+    fseek(image_file, 0, SEEK_END);
+    long image_size = ftell(image_file);
+    rewind(image_file);
+
+
+    // Allocate memory to store image data
+    unsigned char *image_inByte = (unsigned char *)malloc(image_size);
+    if (image_inByte == NULL) {
+        perror("Memory allocation failed\n");
+        fclose(image_file);
+        return;
+    }
+
+    // Step 4: Send metadata (image size)
+    if (send(python_server_socket, &image_size, sizeof(image_size), 0) != sizeof(image_size)) {
+        perror("Metadata send failed");
+        fclose(image_file);
+        exit(EXIT_FAILURE);
+    }
+
+    // Step 5: Send the image data
+    char buffer[IMG_BUFFER];
+    size_t bytes_read;
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), image_file)) > 0) {
+        if ((ssize_t)send(python_server_socket, buffer, bytes_read, 0) != (ssize_t)bytes_read) {
+            perror("Image data send failed");
+            fclose(image_file);
+            exit(EXIT_FAILURE);
         }
-
-        //Update the next byte to send
-        bytes_sent += chunk_size;
-        remaining_bytes -= chunk_size;
     }
 
-    // Send "end" -> end the process
-    const char *end_message = "end";
-    if (send(python_server_socket, end_message, strlen(end_message), 0) == -1) {
-        perror("Send failed\n");
-        free(image_inByte);
-        close(python_server_socket);
-        return;
-    }
 
-    printf("Image sent to server\n");
-    free(image_inByte);
-
-    // Wait for response from server
-    char response[IMG_BUFFER];
-    ssize_t bytes_received = recv(python_server_socket, response, IMG_BUFFER - 1, 0);
-    if (bytes_received == -1) {
-        perror("Receive failed\n");
-        close(python_server_socket);
-        return;
-    }
+    // Step 6: Close resources and connection
+    fclose(image_file);
 }
 
 

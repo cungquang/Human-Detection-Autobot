@@ -1,6 +1,8 @@
 import threading
 import socket
 import cv2
+from PIL import Image
+
 
 #termination flag
 isTerminated = 0
@@ -113,30 +115,32 @@ def convert_pixel_cm(pixel):
 
 
 def handle_client_image(client_socket):
-    isDone = 1
+    image_size_bytes = client_socket.recv(IMG_BUFFER)
+    image_size = int.from_bytes(image_size_bytes, byteorder='big')
+    print("Image size:", image_size)
+
+    # Step 6: Receive the image data
     image_data = b""
-
-    #start receiving picture
-    while not isDone:
-        chunk = client_socket.recv(IMG_BUFFER)
-        
-        #complete sending message
+    bytes_received = 0
+    while bytes_received < image_size:
+        chunk = client_socket.recv(min(IMG_BUFFER, image_size - bytes_received))
         if not chunk:
-            isDone = 1
             break
-
-        if chunk == b"end":
-            isDone = 1
-            break
-
-        #combine image
         image_data += chunk
+        bytes_received += len(chunk)
+    
+    print("Image received from client.")
 
-    #send signal
-    message = "Image received successfully!"
-    print(message);
-    client_socket.sendall(message.encode())    
-    client_socket.close()
+    with open("received_image.JPG", "wb") as file:
+        file.write(image_data)
+
+    # Open image using Pillow
+    image = Image.open("received_image.JPG")
+
+    # Save as JPEG
+    image.save("received_image.JPG", "JPEG")
+
+     
 
 
 def start_tcp_server(host, port):
