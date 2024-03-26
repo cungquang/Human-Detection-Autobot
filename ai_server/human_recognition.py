@@ -111,18 +111,10 @@ def handle_client_image(client_connection):
         
         print("Total bytes received:", len(image_data))
 
-        # with open("received_image.jpg", "wb") as file:
-        #     file.write(image_data)
-
-        # # Open image using Pillow
-        # image = Image.open("received_image.jpg")
-        # image.save("received_image.jpg", "JPEG")
-
         save_image_from_bytes_with_opencv(image_data, "received_image.JPG")
     except Exception as e:
-        # Print detailed information about the exception
         print("An error occurred:", e)
-        #traceback.print_exc()
+        traceback.print_exc()
 
 
 def start_tcp_server(host, port):

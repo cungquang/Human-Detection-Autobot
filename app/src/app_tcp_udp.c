@@ -21,6 +21,11 @@
 //Socket
 static int python_server_socket;
 
+//Initiate private function
+static void Tcp_setMetadata(long image_size, FILE *image_file);
+static int Tcp_getCofirmation(FILE *image_file);
+static void Tcp_sendChunkOfImage(FILE *image_file);
+
 
 /*
 *****************************
@@ -68,13 +73,40 @@ void Tcp_sendImage(char *imagePath)
 
     //Read size of file
     fseek(image_file, 0, SEEK_END);
-    int image_size = ftell(image_file);
+    long image_size = ftell(image_file);
     fseek(image_file, 0, SEEK_SET);                 //move back to the head of file
 
     //Send metadata - image size
+    Tcp_setMetadata(image_size, image_file);
+
+    //Wait for confirmation from server
+    int canStart = Tcp_getCofirmation(image_file);
+
+    //If ready to proceed -> send image
+    if(canStart)
+    {
+        Tcp_sendChunkOfImage(image_file);
+    }
+    
+    //Wait for response - distance_to_center
+
+
+    fclose(image_file);
+}
+
+
+/*
+*****************************
+*          PRIVATE          *
+*****************************
+*/
+
+//send metadata to the server
+static void Tcp_setMetadata(long image_size, FILE *image_file)
+{
     char image_size_str[20];
     memset(image_size_str, 0, sizeof(image_size_str));
-    snprintf(image_size_str, sizeof(image_size_str), "%d", image_size);
+    snprintf(image_size_str, sizeof(image_size_str), "%ld", image_size);
 
     printf("Sending image size: %s\n", image_size_str);
     if (send(python_server_socket, image_size_str, strlen(image_size_str), 0) < 0) {
@@ -82,31 +114,41 @@ void Tcp_sendImage(char *imagePath)
         fclose(image_file);
         return;
     }
+}
 
+//get confirmation from the server
+static int Tcp_getCofirmation(FILE *image_file)
+{
     //Receive confirmation from server
-    char confirmation[5]; // Assuming maximum length of confirmation message is 5 characters
+    char confirmation[1000]; // Assuming maximum length of confirmation message is 5 characters
     ssize_t bytes_received = recv(python_server_socket, confirmation, sizeof(confirmation) - 1, 0);
     if (bytes_received == -1) {
         perror("Failed to receive confirmation from server\n");
         fclose(image_file);
-        return;
+        return 0;
     }
-    confirmation[bytes_received] = '\0'; // Null-terminate the received message
+
+    // Null-terminate the received message
+    confirmation[bytes_received] = '\0'; 
 
     // Check if confirmation message is "okay"
     if (strcmp(confirmation, "okay") != 0) {
         fprintf(stderr, "Unexpected confirmation message from server: %s\n", confirmation);
         fclose(image_file);
-        return;
+        return 0;
     }
 
+    return 1;
+}
 
+//send image to server
+static void Tcp_sendChunkOfImage(FILE *image_file)
+{
     //Send the image data - use fread -> read into memory
     char buffer[IMG_BUFFER];
     memset(buffer, 0, sizeof(buffer));
     size_t bytes_read;
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), image_file)) > 0) {
-        
         //Send data
         if ((ssize_t)send(python_server_socket, buffer, bytes_read, 0) != (ssize_t)bytes_read) {
             perror("Image data send failed");
@@ -117,14 +159,4 @@ void Tcp_sendImage(char *imagePath)
         // Clear the buffer after each read
         memset(buffer, 0, sizeof(buffer));
     }
-
-    // Step 6: Close resources and connection
-    fclose(image_file);
 }
-
-
-/*
-*****************************
-*          PRIVATE          *
-*****************************
-*/
