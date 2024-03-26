@@ -10,7 +10,6 @@
 *   - Clean up server 
 */
 
-void TcpServer_Init();
-void TcpServer_cleanUp();
+void Tcp_sendImage(char *imagePath)
 
 #endif

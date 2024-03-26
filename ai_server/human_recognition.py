@@ -2,14 +2,20 @@ import threading
 import socket
 import cv2
 
+#termination flag
 isTerminated = 0
-SERVER_IP = '127.0.0.1'
-SERVER_PORT = 5555
-CLIENT_IP = '192.168.6.2'
+
+#server information
+SERVER_IP = '192.168.148.129'
+SERVER_PORT = 6666
+
+#for sending termination signal
+CLIENT_IP = '192.168.7.2'
 CLIENT_PORT = 7777
 
 PIXEL_CONVERSION_RATE = 0.02645
-
+MSG_BUFFER = 1024
+IMG_BUFFER = 4096           
 
 #########################
 #                       #
@@ -106,53 +112,72 @@ def convert_pixel_cm(pixel):
 #########################
 
 def handle_client_send(client_socket):
-    while not isTerminated:
-        response = input("Me: ")
-        client_socket.send(response.encode('utf-8'))
 
+    client_socket.close()
 
-def handle_client_receive(client_socket):
-    while not isTerminated:
-        request = client_socket.recv(1024).decode('utf-8')
+def handle_client_image(client_socket):
+    isStart = 0
+    isDone = 1
+    image_data = b""
+    
+    #wait for signal to start:
+    while not isStart:
+        request = client_socket.recv(MSG_BUFFER).decode('utf-8')
+        if request == "start":
+            isStart = 1
+            isDone = 0
 
-        if not request:
+    #start receiving picture
+    while not isDone:
+        chunk = client_socket.recv(IMG_BUFFER)
+        
+        #complete sending message
+        if not chunk:
+            isDone = 1
             break
 
-        #Handle message:
-        if request == "terminated":
-            client_socket.send(request.encode('utf-8'));
+        if chunk == b"end":
+            isDone = 1
             break
 
-        print("From: ", request)
+        #combine image
+        image_data += chunk
 
-    #close connection
+    #send signal
+    message = "Image received successfully!"
+    client_socket.sendall(message.encode())    
     client_socket.close()
 
 
 def start_tcp_server(host, port):
     # Create a TCP/IP socket
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((SERVER_IP, SERVER_PORT))
+    server_socket.listen(1) 
+    
+    print(f"Server listening on {SERVER_IP}:{SERVER_PORT}")
 
     try:
-        # Connect the socket to the server
-        client_address = (CLIENT_IP, CLIENT_PORT)
-        client_socket.connect(client_address)
+        while not isTerminated:
+            #accept connection
+            client_socket, client_address = server_socket.accept();
 
-        #initiate threads
-        receive_thread = threading.Thread(target=handle_client_receive, args=(client_socket,))
-        send_thread = threading.Thread(target=handle_client_send, args=(client_socket,))
+            #initiate threads
+            # Start a new thread to handle the client
+            client_thread = threading.Thread(target=handle_client_image, args=(client_socket, client_address))
+            client_thread.start()
 
-        #start both thread
-        receive_thread.start()
-        send_thread.start()
+            # Wait for both threads to finish
+            client_thread.join()
+            
+            #close connection
+            client_socket.close()
 
-        # Wait for both threads to finish
-        receive_thread.join()
-        send_thread.join()
-
+    except KeyboardInterrupt:
+        print("Server shutting down.")
     finally:
-        print("\n[*] Server shutting down.")
-        client_socket.close()
+        # Close the server socket
+        server_socket.close()
 
 def process_image():
     # image_path = './pictures/test1.JPG'
