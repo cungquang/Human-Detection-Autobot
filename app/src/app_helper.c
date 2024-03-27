@@ -8,6 +8,7 @@
 #include <sys/epoll.h>  // for epoll()
 #include <fcntl.h>      // for open()
 #include <unistd.h>     // for close()
+#include "app_helper.h"
 
 //Get time (in ms)
 long long getTimeInMs(void)
@@ -31,4 +32,10 @@ void sleepForMs(long long delayInMs)
     int nanoseconds = delayNs % NS_PER_SECOND;
     struct timespec reqDelay = {seconds, nanoseconds};
     nanosleep(&reqDelay, (struct timespec *) NULL);
+}
+
+intmax_t getCurrentTimeNanoseconds() {
+    struct timespec currentTime;
+    clock_gettime(CLOCK_MONOTONIC, &currentTime);
+    return (intmax_t)currentTime.tv_sec * 1000000000LL + (uint64_t)currentTime.tv_nsec;
 }

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "hal_helper.h"
 
 //Write to GPIO file
 void writeToFile(const char* fileToWriteGpio, const char* content) {
@@ -30,4 +31,48 @@ void readFromFile(const char* fileToReadGpio, char* buff, unsigned int maxLength
     }
 
     fclose(pFile);
+}
+
+// Read values
+int valueReader(char *fileName) {
+    FILE *pFile = fopen(fileName, "r");
+    if (pFile == NULL) {
+        printf("ERROR: Unable to open file (%s) for read\n", fileName);
+        exit(-1);
+    }
+
+    // Read string (line)
+    const int MAX_LENGTH = 1024;
+    char buff[MAX_LENGTH];
+    fgets(buff, MAX_LENGTH, pFile);
+
+    // Close
+    fclose(pFile);
+
+    // Copy the buffer and return
+    int number = atoi(buff);
+    return number;
+}
+
+// Provided by Brian Fraser (Runs a linux command)
+void runCommand(char* command) {
+    // Execute the shell command (output into pipe)
+    FILE *pipe = popen(command, "r");
+    
+    // Ignore output of the command; but consume it
+    // so we don't get an error when closing the pipe.
+    char buffer[1024];
+    while (!feof(pipe) && !ferror(pipe)) {
+        if (fgets(buffer, sizeof(buffer), pipe) == NULL)
+            break;
+            // printf("--> %s", buffer); // Uncomment for debugging
+    }
+
+    // Get the exit code from the pipe; non-zero is an error:
+    int exitCode = WEXITSTATUS(pclose(pipe));
+    if (exitCode != 0) {
+        perror("Unable to execute command:");
+        printf(" command: %s\n", command);
+        printf(" exit code: %d\n", exitCode);
+    }
 }
