@@ -1,52 +1,36 @@
+import threading
+import socket
 import cv2
+import traceback
+import struct
+import numpy as np
+
+#termination flag
+isTerminated = 0
+
+#server information
+SERVER_IP = '192.168.148.129'
+SERVER_PORT = 6666
+
+#for sending termination signal
+CLIENT_IP = '192.168.7.2'
+CLIENT_PORT = 7777
 
 PIXEL_CONVERSION_RATE = 0.02645
+IMG_BUFFER = 8024         
 
-#Function for debugging:
-def debug_detect_human(image_path):
-    # Load pre-trained human detector
-    human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
+IMG_PATH = "received_image.JPG"
 
-    # Load image
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Detect humans in the image
-    humans = human_cascade.detectMultiScale(gray, 1.1, 4)
-
-    if len(humans) > 0:
-        # Get the coordinates of the first detected human
-        x, y, w, h = humans[0]
-
-        # Draw rectangle around the detected human
-        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-        # Calculate the center of the detected human
-        human_center_x = x + w // 2
-        human_center_y = y + h // 2
-
-        # Calculate the center of the image
-        image_center_x = image.shape[1] // 2
-        image_center_y = image.shape[0] // 2
-
-        # Calculate the distance from human to the center of the image
-        distance = np.sqrt((human_center_x - image_center_x)**2 + (human_center_y - image_center_y)**2)
-
-        # Display distance on the image
-        cv2.putText(image, f"Distance: {image_center_x:.2f} pixels", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-
-        # Show the image with the detected human and distance
-        cv2.imshow("Human Detection", image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    else:
-        print("No human detected in the image.")
-
+#########################
+#                       #
+#   Human Recognition   #
+#                       #
+#########################
 
 #Source: ChatGPT
-def detect_human(image_path):
+def detect_human(image):
+    #load pre-trained data
     human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
-    image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     humans = human_cascade.detectMultiScale(gray, 1.1, 4)
 
@@ -58,36 +42,121 @@ def detect_human(image_path):
         #print("No human detected in the image.")
         return None
 
-def get_gap_from_center(human_center_x, image_path):
-    image = cv2.imread(image_path)
+#get the position of the center line in the picture
+def get_gap_from_center(human_center_x, image):
+    #image = cv2.imread(image_path)
     image_width = image.shape[1]
     center = image_width / 2
     gap = human_center_x - center
 
     return gap
 
-def identify_human_position(image_path):
-    human_center_x = detect_human(image_path)
+#identify position of human in the picture
+def identify_human_position(image):
+    human_center_x = detect_human(image)
 
     #If found human
     if human_center_x is not None:
         #Return position: left -> negative; center -> 0; right -> positive
-        return get_gap_from_center(human_center_x, image_path)
+        return get_gap_from_center(human_center_x, image)
     
     else:
         #No human found OR unable to identify human
         return None
 
-#on average 1 pixel = 0.02645 cm
+#convert pixel to cm: average 1 pixel = 0.02645 cm
 def convert_pixel_cm(pixel):
     return round(pixel*PIXEL_CONVERSION_RATE)
 
-def main():
-    # Example usage
-    image_path = './pictures/test1.JPG'
-    human_position_pixel = identify_human_position(image_path)
+#processing image
+def process_image(image_path):
+    image = cv2.imread(image_path)
+    human_position_pixel = identify_human_position(image)
     human_position_cm = convert_pixel_cm(human_position_pixel)
-    print(human_position_cm)
+
+    return human_position_cm 
+
+#########################
+#                       #
+#      TCP Server       #
+#                       #
+#########################
+
+#save image (in byte) to the file
+def save_image_from_bytes_with_opencv(image_data, filename):
+    image_np = np.frombuffer(image_data, dtype=np.uint8)
+    image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+    cv2.imwrite(filename, image)
+
+#thread to read image
+def handle_client_image(client_connection):
+    #Receive data in chunk - then combine
+    image_data = b""
+    bytes_received = 0
+    
+    try:
+        # Read the bytes representing the image size
+        image_size_bytes = client_connection.recv(20)
+        image_size_str = image_size_bytes.decode('utf-8')
+        image_size = int(image_size_str)
+
+        #send message trigger sending data
+        client_connection.send(b"okay")
+
+        #keep read file until == image_size
+        while bytes_received < image_size:
+            chunk = client_connection.recv(min(IMG_BUFFER, image_size - bytes_received))
+            if not chunk:
+                break
+            image_data += chunk
+            bytes_received += len(chunk)
+        
+        print("Total bytes received:", len(image_data))
+
+        #Save iamge data into the file
+        save_image_from_bytes_with_opencv(image_data, IMG_PATH)
+
+        #call AI read image
+        distance_to_human = process_image(IMG_PATH)
+        print("Distance to nearest human: ", distance_to_human)
+        distance_bytes = struct.pack("!i", distance_to_human)
+        client_connection.send(distance_bytes)
+    except Exception as e:
+        print("An error occurred:", e)
+        traceback.print_exc()
+
+
+def start_tcp_server():
+    # Create a TCP/IP socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((SERVER_IP, SERVER_PORT))
+    server_socket.listen(1) 
+    
+    print(f"Server listening on {SERVER_IP}:{SERVER_PORT}")
+
+    try:
+        while not isTerminated:
+            #accept connection
+            client_connection, client_address = server_socket.accept()
+
+            #Start a new thread to handle the client
+            client_thread = threading.Thread(target=handle_client_image, args=(client_connection,))
+            client_thread.start()
+
+            #Wait for both threads to finish
+            client_thread.join()
+
+            #close connection
+            client_connection.close()
+
+    except KeyboardInterrupt:
+        print("Server shutting down.")
+    finally:
+        # Close the server socket
+        server_socket.close()
+
+def main():
+    start_tcp_server()
 
 if __name__ == "__main__":
     main()

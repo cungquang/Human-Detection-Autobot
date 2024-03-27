@@ -1,5 +1,5 @@
-#ifndef _APP_TCPSERVER_H_
-#define _APP_TCPSERVER_H_
+#ifndef _APP_TCP_UDP_H_
+#define _APP_TCP_UDP_H_
 
 /*
 * Name: app_tcpServer
@@ -9,8 +9,8 @@
 *   - Create 2 threads: receive & send 
 *   - Clean up server 
 */
-
-void tcpServer_Init(int *terminate_flag);
-void tcpServer_cleanUp();
+void Tcp_init();
+void Tcp_cleanUp();
+int Tcp_sendImage(char *imagePath);
 
 #endif
