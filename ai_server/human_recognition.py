@@ -126,7 +126,7 @@ def handle_client_image(client_connection):
         traceback.print_exc()
 
 
-def start_tcp_server(host, port):
+def start_tcp_server():
     # Create a TCP/IP socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((SERVER_IP, SERVER_PORT))
@@ -156,7 +156,7 @@ def start_tcp_server(host, port):
         server_socket.close()
 
 def main():
-    start_tcp_server(SERVER_IP, SERVER_PORT)
+    start_tcp_server()
 
 if __name__ == "__main__":
     main()
