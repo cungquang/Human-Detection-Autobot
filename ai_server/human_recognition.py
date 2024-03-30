@@ -110,6 +110,9 @@ def handle_client_image(client_connection):
                 break
             image_data += chunk
             bytes_received += len(chunk)
+
+            #slow down the transferring data - send confirmation
+            client_connection.send(b"okay")
         
         print("Total bytes received:", len(image_data))
 
@@ -119,7 +122,7 @@ def handle_client_image(client_connection):
         #call AI read image
         distance_to_human = process_image(IMG_PATH)
         print("Distance to nearest human: ", distance_to_human)
-        distance_bytes = struct.pack("!i", distance_to_human)
+        distance_bytes = struct.pack("d", distance_to_human)
         client_connection.send(distance_bytes)
     except Exception as e:
         print("An error occurred:", e)

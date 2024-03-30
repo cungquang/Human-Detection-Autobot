@@ -11,8 +11,8 @@
 #define IMG_BUFFER 1024
 
 //UDP Server to receive command
-#define UDP_SERVER_IP "192.168.7.2"
-#define UDP_SERVER_PORT 12345
+// #define UDP_SERVER_IP "192.168.7.2"
+// #define UDP_SERVER_PORT 12345
 
 //Python Server
 #define PYTHON_SERVER_IP "192.168.148.129"
@@ -180,8 +180,15 @@ static void Tcp_sendChunksOfImage(FILE *image_file)
             fclose(image_file);
             exit(EXIT_FAILURE);
         }
-
+        
         // Clear the buffer after each read
         memset(buffer, 0, sizeof(buffer));
+
+        //wait for confirmation from server
+        if(!Tcp_getCofirmation(image_file)) 
+        {
+            perror("Image unable to completely send");
+            exit(EXIT_FAILURE);
+        }
     }
 }
