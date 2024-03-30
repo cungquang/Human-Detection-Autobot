@@ -72,9 +72,9 @@ def convert_pixel_cm(pixel):
 def process_image(image_path):
     image = cv2.imread(image_path)
     human_position_pixel = identify_human_position(image)
-    human_position_cm = convert_pixel_cm(human_position_pixel)
+    #human_position_cm = convert_pixel_cm(human_position_pixel)
 
-    return human_position_cm 
+    return human_position_pixel 
 
 #########################
 #                       #
