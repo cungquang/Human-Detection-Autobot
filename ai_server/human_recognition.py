@@ -121,8 +121,8 @@ def handle_client_image(client_connection):
 
         #call AI read image
         distance_to_human = process_image(IMG_PATH)
-        print("Distance to nearest human: ", distance_to_human)
-        distance_bytes = struct.pack("d", distance_to_human)
+        print("Distance to nearest human: ", int(distance_to_human))
+        distance_bytes = struct.pack("!i", int(distance_to_human))
         client_connection.send(distance_bytes)
     except Exception as e:
         print("An error occurred:", e)

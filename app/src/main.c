@@ -10,6 +10,6 @@ int main()
     int result_fromAI = Tcp_sendImage(imagePath);
     Tcp_cleanUp();
 
-    printf("Result from AI: %dcm\n", result_fromAI);
+    printf("Result from AI: %d pixel\n", result_fromAI);
     return 0;
 }
