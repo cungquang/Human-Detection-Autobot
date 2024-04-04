@@ -10,6 +10,7 @@
 #include "app_helper.h"
 #include <stdint.h>
 #include <time.h>
+#include <pthread.h>
 
 #define ECHO_PATH_DIRECTION       "/sys/class/gpio/gpio66/direction" // p8.07
 #define ECHO_PATH_VALUE       "/sys/class/gpio/gpio66/value" // p8.07
@@ -21,19 +22,20 @@
 #define SPEED_OF_SOUND_CM_PER_US 0.0343 // Speed of sound in cm/us
 #define SPEED_OF_SOUND_CM_PER_NS  0.0000343 // Speed of sound in cm/ns
 
-void initializeSensor() {
+static pthread_t ultrasonicThread;
+static bool endProgram = false;
+
+static void initializeSensor() {
     runCommand("config-pin p8.07 gpio");
     runCommand("config-pin p8.08 gpio");
     writeToFile(ECHO_PATH_DIRECTION, "in");
     writeToFile(TRIGGER_PATH_DIRECTION, "out");
 }
 
-int main() {
-    initializeSensor();
+static void* ultrasonicLoop() {
     intmax_t  distance;
-    int loop_count = 500;  // Number of measurements to take
 
-    while (loop_count--) {
+    while (!endProgram) {
         // Measure the length of the pulse on the echo pin
         intmax_t startTime = 0;
         intmax_t initialTime = 0;
@@ -76,4 +78,14 @@ int main() {
         sleepForMs(100);  // Wait before next measurement
     }
     return 0;
+}
+
+void ultrasonicStartup() {
+    initializeSensor();
+    pthread_create(&ultrasonicThread, NULL, ultrasonicLoop, NULL);
+}
+
+void ultrasonicShutdown() {
+    endProgram = true;
+    pthread_join(ultrasonicThread, NULL);
 }
