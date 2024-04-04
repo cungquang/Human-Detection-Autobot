@@ -66,7 +66,7 @@ void configureCamera(){
     }
 }
 
-void captureImage() {
+char* captureImage() {
     void* buffer_start;
     buffer_start = mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
 
@@ -92,7 +92,7 @@ void captureImage() {
     }
 
     // Save jpg data to a file
-    char filename[100];
+    char* filename = malloc(100 * sizeof(char));
     time_t rawtime;
     struct tm *timeinfo;
 
@@ -101,9 +101,13 @@ void captureImage() {
     timeinfo = localtime(&rawtime);
 
     // Format the filename with timestamp
-    strftime(filename, sizeof(filename), "image_%d_%H-%M-%S.jpg", timeinfo);
+    strftime(filename, 100, "image_%d_%H-%M-%S.jpg", timeinfo);
 
     FILE* outfile;
+
+    // temporarily just make it called this
+    //strcpy(filename, "image1.jpg");
+
     outfile = fopen(filename, "wb");
     //outfile = fopen("image.yuv", "wb");
     fwrite(buffer_start, buf.bytesused, 1, outfile);
@@ -111,6 +115,7 @@ void captureImage() {
 
     printf("Exported the image as %s\n", filename);
     munmap(buffer_start, buf.length);
+    return filename;
 }
 
 void cameraShutdown() {

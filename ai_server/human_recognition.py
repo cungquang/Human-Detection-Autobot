@@ -9,7 +9,7 @@ import numpy as np
 isTerminated = 0
 
 #server information
-SERVER_IP = '192.168.148.129'
+SERVER_IP = '192.168.26.128'
 SERVER_PORT = 6666
 
 #for sending termination signal
@@ -121,9 +121,14 @@ def handle_client_image(client_connection):
 
         #call AI read image
         distance_to_human = process_image(IMG_PATH)
-        print("Distance to nearest human: ", int(distance_to_human))
-        distance_bytes = struct.pack("!i", int(distance_to_human))
-        client_connection.send(distance_bytes)
+        if distance_to_human is None:
+            print("No human detected within the image!")
+            distance_bytes = struct.pack("!i", 0)
+            client_connection.send(distance_bytes)
+        else:
+            print("Distance to nearest human: ", int(distance_to_human))
+            distance_bytes = struct.pack("!i", int(distance_to_human))
+            client_connection.send(distance_bytes)
     except Exception as e:
         print("An error occurred:", e)
         traceback.print_exc()

@@ -8,7 +8,12 @@ add_executable(finalProject ${MY_SOURCES})
 target_link_libraries(finalProject LINK_PRIVATE hal)
 
 # Make a library for app
-add_library(app STATIC ${MY_SOURCES})
+add_library(app)
+
+target_sources(app
+  PRIVATE
+  src/app_helper.c
+)
 
 target_include_directories(app PUBLIC include)
 
