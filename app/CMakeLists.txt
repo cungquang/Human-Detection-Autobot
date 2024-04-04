@@ -16,5 +16,5 @@ target_include_directories(app PUBLIC include)
 add_custom_command(TARGET finalProject POST_BUILD 
   COMMAND "${CMAKE_COMMAND}" -E copy 
      "$<TARGET_FILE:finalProject>"
-     "~/cmpt433/public/myApps/finalProject" 
+     "~/cmpt433/public/myApps/final_project/finalProject" 
   COMMENT "Copying ARM executable to public NFS directory")
