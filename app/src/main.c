@@ -8,13 +8,13 @@ int main()
 {
     //printf("Hello World");
     configureCamera();
-    //char *imagePath = "./test2.JPG";
+    char *imagePath = "./grabber.jpg";
     sleepForMs(5000);
     Tcp_init();
-    char *imagePath = captureImage();
+    //char *imagePath = captureImage();
     int result_fromAI = Tcp_sendImage(imagePath);
     Tcp_cleanUp();
-    free(imagePath);
+    //free(imagePath);
 
     if (result_fromAI == 0)
     {
