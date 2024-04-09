@@ -1,4 +1,5 @@
 import boto3
+from PIL import Image, ImageEnhance
 
 def detect_humans(image_path):
     # Initialize the Rekognition client
@@ -45,9 +46,26 @@ def calculate_distance_to_center(image_width, image_height, bounding_box):
     distance = ((image_center_x - bounding_box_center_x) ** 2 + (image_center_y - bounding_box_center_y) ** 2) ** 0.5
     return distance
 
+def enhance_image(image_path, output_path, brightness=1.2, contrast=1.2, sharpness=1.2):
+    # Open the image file
+    image = Image.open(image_path)
+
+    # Enhance brightness, contrast, and sharpness
+    enhancer = ImageEnhance.Brightness(image)
+    image = enhancer.enhance(brightness)
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(contrast)
+    enhancer = ImageEnhance.Sharpness(image)
+    image = enhancer.enhance(sharpness)
+
+    # Save the enhanced image
+    image.save(output_path)
+
 # Example usage
 if __name__ == "__main__":
-    image_path = 'path/to/your/image.jpg'
+    raw_data_path = './received_image.JPG'
+    image_path = './enhanced_image.jpg'
+    
     humans = detect_humans(image_path)
     if humans:
         # Assume the image dimensions are known, replace these values with actual dimensions
