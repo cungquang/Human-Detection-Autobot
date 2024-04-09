@@ -1,8 +1,10 @@
 import threading
 import socket
-import cv2
 import traceback
 import struct
+import boto3
+import cv2
+import os
 import numpy as np
 
 #termination flag
@@ -19,6 +21,8 @@ CLIENT_PORT = 7777
 PIXEL_CONVERSION_RATE = 0.02645
 IMG_BUFFER = 8024         
 
+AWS_ID = os.environ.get('AWS_ID')
+AWS_ACCESS = os.environ.get('AWS_ACCESS')
 IMG_PATH = "received_image.JPG"
 
 #########################
@@ -57,55 +61,78 @@ def test_human():
     cv2.destroyAllWindows()
 
 
-#Source: ChatGPT
-def detect_human(image):
-    #load pre-trained data
-    human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    humans = human_cascade.detectMultiScale(gray, 1.1, 4)
-    print("num humans: "+str(len(humans)))
+def detect_humans(image_path):    
+    # Initialize the Rekognition client
+    client = boto3.client(
+        'rekognition',
+        aws_access_key_id=AWS_ID,
+        aws_secret_access_key=AWS_ACCESS,
+        region_name='us-east-1'
+    )
 
-    if len(humans) > 0:
-        print("human[0]:"+str(humans[0]))
-        x, y, w, h = humans[0]
-        human_center_x = x + w // 2
-        return human_center_x
-    else:
-        #print("No human detected in the image.")
-        return None
+    # Open the image file
+    with open(image_path, 'rb') as image_file:
+        image_bytes = image_file.read()
 
-#get the position of the center line in the picture
-def get_gap_from_center(human_center_x, image):
-    #image = cv2.imread(image_path)
-    image_width = image.shape[1]
-    center = image_width / 2
-    print("centre: "+str(center)+"/n")
-    gap = human_center_x - center
+    # Detect labels in the image
+    response = client.detect_labels(
+        Image={
+            'Bytes': image_bytes
+        },
+        MaxLabels=10,
+        MinConfidence=50
+    )
 
-    return gap
+    # Extract bounding box coordinates of detected humans
+    human = {}
+    for label in response['Labels']:
+        if label['Name'] == 'Person':
+            for instance in label['Instances']:
+                bounding_box = instance['BoundingBox']
+                
+                if bounding_box:
+                    human['left'] = bounding_box['Left']
+                    human['top'] = bounding_box['Top'] 
+                    human['width'] = bounding_box['Width'] 
+                    human['height'] = bounding_box['Height'] 
+                
+                    return human
+    return None
+
+
+def calculate_distance_to_center(image_path, bounding_box):
+    image = cv2.imread(image_path)
+    image_height, image_width, _ = image.shape
+
+    # Calculate center of the image
+    image_center_x = image_width / 2
+    image_center_y = image_height / 2
+
+    # Calculate center of the bounding box
+    left = image_width*bounding_box['left']
+    top = image_height*bounding_box['top']
+    width = image_width*bounding_box['width']
+    height = image_height*bounding_box['height']
+
+    human_center_x = left + width/2
+    human_center_y = top + height/2
+
+    # gap on x_axis
+    distance = image_center_x - human_center_x
+    return distance
 
 #identify position of human in the picture
-def identify_human_position(image):
-    human_center_x = detect_human(image)
-
-    #If found human
-    if human_center_x is not None:
-        #Return position: left -> negative; center -> 0; right -> positive
-        return get_gap_from_center(human_center_x, image)
-    
+def identify_human_position(image_path):
+    human = detect_humans(image_path)
+    if human:
+        distance = calculate_distance_to_center(image_path, human)
+        return distance
     else:
-        #No human found OR unable to identify human
         return None
-
-#convert pixel to cm: average 1 pixel = 0.02645 cm
-def convert_pixel_cm(pixel):
-    return round(pixel*PIXEL_CONVERSION_RATE)
 
 #processing image
 def process_image(image_path):
-    image = cv2.imread(image_path)
-    human_position_pixel = identify_human_position(image)
-    #human_position_cm = convert_pixel_cm(human_position_pixel)
+    human_position_pixel = identify_human_position(image_path)
 
     return human_position_pixel 
 

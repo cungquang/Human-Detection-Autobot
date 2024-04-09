@@ -4,7 +4,7 @@ import os
 from PIL import Image, ImageEnhance
 
 AWS_ID = os.environ.get('AWS_ID')
-AWS_ACCESS = os.environ.get('AWS_ACESS')
+AWS_ACCESS = os.environ.get('AWS_ACCESS')
 
 def detect_humans(image_path):    
     # Initialize the Rekognition client
@@ -84,7 +84,7 @@ def draw_bounding_box(human):
 
 # Example usage
 if __name__ == "__main__":
-    raw_data_path = './pictures/test4.JPG'
+    raw_data_path = './received_image2.JPG'
 
     human = detect_humans(raw_data_path)
     if human:
