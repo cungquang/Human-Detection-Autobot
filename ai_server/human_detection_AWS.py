@@ -3,15 +3,15 @@ import cv2
 import os
 from PIL import Image, ImageEnhance
 
-ACCESS_ID = os.environ.get('ACCESS_ID')
-SECRET_KEY = os.environ.get('SECRET_KEY')
+AWS_ID = os.environ.get('AWS_ID')
+AWS_ACCESS = os.environ.get('AWS_ACESS')
 
 def detect_humans(image_path):    
     # Initialize the Rekognition client
     client = boto3.client(
         'rekognition',
-        aws_access_key_id=ACCESS_ID,
-        aws_secret_access_key=SECRET_KEY,
+        aws_access_key_id=AWS_ID,
+        aws_secret_access_key=AWS_ACCESS,
         region_name='us-east-1'
     )
 
