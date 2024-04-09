@@ -2,15 +2,15 @@ import boto3
 import cv2
 from PIL import Image, ImageEnhance
 
-ACCESS_KEY_ID = 'AKIAV6ZBKG62AUZFQM6Z'
-SECRET_ACCESS_KEY = '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' 
-
 def detect_humans(image_path):
+    ACCESS_ID = 'AKIAV6ZBKG62AUZFQM6Z'
+    SECRET_KEY = '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' 
+    
     # Initialize the Rekognition client
     client = boto3.client(
         'rekognition',
-        aws_access_key_id=ACCESS_KEY_ID,
-        aws_secret_access_key=SECRET_ACCESS_KEY
+        aws_access_key_id=ACCESS_ID,
+        aws_secret_access_key=SECRET_KEY
     )
 
     # Open the image file
