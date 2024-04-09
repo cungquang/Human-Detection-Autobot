@@ -9,7 +9,7 @@ import numpy as np
 isTerminated = 0
 
 #server information
-SERVER_IP = '192.168.26.128'
+SERVER_IP = '192.168.148.129'
 SERVER_PORT = 6666
 
 #for sending termination signal
@@ -27,14 +27,43 @@ IMG_PATH = "received_image.JPG"
 #                       #
 #########################
 
+
+def test_human():
+    import cv2
+
+    # Load the pre-trained Haar Cascade classifier for human detection
+    human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
+
+    # Load the image
+    image_path = 'received_image.JPG'
+    image = cv2.imread(image_path)
+
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Detect humans in the image
+    humans = human_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    # Draw rectangles around the detected humans
+    for (x, y, w, h) in humans:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+    # Display the image with detected humans
+    cv2.imshow('Humans Detected', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 #Source: ChatGPT
 def detect_human(image):
     #load pre-trained data
     human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     humans = human_cascade.detectMultiScale(gray, 1.1, 4)
+    print("num humans: "+str(len(humans)))
 
     if len(humans) > 0:
+        print("human[0]:"+str(humans[0]))
         x, y, w, h = humans[0]
         human_center_x = x + w // 2
         return human_center_x
@@ -47,6 +76,7 @@ def get_gap_from_center(human_center_x, image):
     #image = cv2.imread(image_path)
     image_width = image.shape[1]
     center = image_width / 2
+    print("centre: "+str(center)+"/n")
     gap = human_center_x - center
 
     return gap
@@ -164,7 +194,8 @@ def start_tcp_server():
         server_socket.close()
 
 def main():
-    start_tcp_server()
+    #start_tcp_server()
+    test_human()
 
 if __name__ == "__main__":
     main()
