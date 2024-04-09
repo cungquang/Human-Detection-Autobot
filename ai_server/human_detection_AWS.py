@@ -6,6 +6,7 @@ from PIL import Image, ImageEnhance
 AWS_ID = os.environ.get('AWS_ID')
 AWS_ACCESS = os.environ.get('AWS_ACCESS')
 
+
 def detect_humans(image_path):    
     # Initialize the Rekognition client
     client = boto3.client(
@@ -71,6 +72,38 @@ def calculate_distance_to_center(image_path, bounding_box):
     # gap on x_axis
     distance = image_center_x - human_center_x
     return distance
+
+
+
+def test_human():
+    import cv2
+
+    # Load the pre-trained Haar Cascade classifier for human detection
+    human_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
+
+    # Load the image
+    image_path = 'temp2.jpg'
+    image = cv2.imread(image_path)
+
+    # # Convert the image to grayscale
+    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # # Detect humans in the image
+    # humans = human_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    # Detect humans in the color image
+    humans = human_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    # Draw rectangles around the detected humans
+    for (x, y, w, h) in humans:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+    # Display the image with detected humans
+    cv2.imshow('Humans Detected', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 
 def draw_bounding_box(human):
     # Draw rectangles around the detected humans
