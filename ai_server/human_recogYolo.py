@@ -3,8 +3,8 @@ import cv2
 from PIL import Image, ImageEnhance
 
 def detect_humans(image_path):
-    ACCESS_ID = 'AKIAV6ZBKG62AUZFQM6Z'
-    SECRET_KEY = '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' 
+    ACCESS_ID = "AKIAV6ZBKG62AUZFQM6Z"
+    SECRET_KEY = "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" 
     
     # Initialize the Rekognition client
     client = boto3.client(
