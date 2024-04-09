@@ -90,6 +90,7 @@ def detect_humans(image_path):
             for instance in label['Instances']:
                 bounding_box = instance['BoundingBox']
                 
+                #first valid human
                 if bounding_box:
                     human['left'] = bounding_box['Left']
                     human['top'] = bounding_box['Top'] 
