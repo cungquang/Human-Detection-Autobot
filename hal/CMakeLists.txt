@@ -15,25 +15,14 @@ target_include_directories(hal PUBLIC include)
 
 target_link_libraries(hal LINK_PRIVATE app)
 
-add_executable(grabber src/grabber.c)
-
 
 set(CMAKE_LIBRARY_PATH ${HOME}/cmpt433/public/pkgs)
 
-target_link_libraries(grabber PRIVATE
+target_link_libraries(hal PRIVATE
     ${HOME}/cmpt433/public/pkgs/libv4l2.so
     ${HOME}/cmpt433/public/pkgs/libv4lconvert.so
     ${HOME}/cmpt433/public/pkgs/libjpeg.so
 )
-
-target_link_libraries(grabber LINK_PRIVATE app)
-
-## Copy executable to final location
-add_custom_command(TARGET grabber POST_BUILD 
-  COMMAND "${CMAKE_COMMAND}" -E copy 
-     "$<TARGET_FILE:grabber>"
-     "~/cmpt433/public/myApps/final_project/grabber" 
-  COMMENT "Copying ARM executable to public NFS directory")
 
 # #add_executable(ultrasonic src/ultrasonic_sensor.c)
 

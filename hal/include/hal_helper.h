@@ -14,4 +14,7 @@ int valueReader(char *fileName);
 // Provided by Brian Fraser (Runs a linux command)
 void runCommand(char* command);
 
+// Provided by Brian Fraser
+void write_int_to_file(const char* filename, int value);
+
 #endif
