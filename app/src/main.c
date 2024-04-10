@@ -4,7 +4,7 @@
 #include "camera.h"
 #include "app_helper.h"
 
-int main() 
+void operation(void)
 {
     //printf("Hello World");
     configureCamera();
@@ -23,5 +23,20 @@ int main()
         printf("Result from AI: %d pixel\n", result_fromAI);
     }
     cameraShutdown();
+}
+
+int main() 
+{
+    Tcp_init();
+    char *imagePath = "../grabber.jpg";
+    int result_fromAI = Tcp_sendImage(imagePath);
+    Tcp_cleanUp();
+
+    if (!result_fromAI)
+    {
+        printf("No human detected within the image!\n");
+    } else {
+        printf("Result from AI: %d pixel\n", result_fromAI);
+    }
     return 0;
 }
