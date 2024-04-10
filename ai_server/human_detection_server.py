@@ -11,7 +11,7 @@ import numpy as np
 isTerminated = 0
 
 #server information
-SERVER_IP = '192.168.26.128'
+SERVER_IP = '192.168.148.129'
 SERVER_PORT = 6666
 
 #for sending termination signal
@@ -132,6 +132,7 @@ def handle_client_image(client_connection):
         image_size = int(image_size_str)
 
         #send message trigger sending data
+        print("image_size_str: ", image_size_str)
         client_connection.send(b"okay")
 
         #keep read file until == image_size
