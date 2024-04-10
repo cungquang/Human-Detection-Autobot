@@ -11,7 +11,7 @@ import numpy as np
 isTerminated = 0
 
 #server information
-SERVER_IP = '192.168.148.129'
+SERVER_IP = '192.168.26.128'
 SERVER_PORT = 6666
 
 #for sending termination signal

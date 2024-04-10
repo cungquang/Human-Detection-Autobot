@@ -76,3 +76,19 @@ void runCommand(char* command) {
         printf(" exit code: %d\n", exitCode);
     }
 }
+
+// Provided by Brian Fraser
+void write_int_to_file(const char* filename, int value){
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error OPENING %s.", filename);
+        exit(1);
+    }
+    
+    int writtenValue = fprintf(file, "%d" , value);
+    if (writtenValue <= 0){
+        printf("ERROR WRITING DATA");
+        exit(1);
+    }
+    fclose(file);
+}
