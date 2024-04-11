@@ -13,10 +13,10 @@
 #include <time.h>
 #include <pthread.h>
 
-#define ECHO_PATH_DIRECTION       "/sys/class/gpio/gpio60/direction" // p9.12
-#define ECHO_PATH_VALUE       "/sys/class/gpio/gpio60/value" // p9.12
-#define TRIGGER_PATH_DIRECTION    "/sys/class/gpio/gpio50/direction" // p9.14
-#define TRIGGER_PATH_VALUE        "/sys/class/gpio/gpio50/value" // p9.14
+#define ECHO_PATH_DIRECTION       "/sys/class/gpio/gpio66/direction" // 
+#define ECHO_PATH_VALUE       "/sys/class/gpio/gpio66/value" //
+#define TRIGGER_PATH_DIRECTION    "/sys/class/gpio/gpio67/direction" //
+#define TRIGGER_PATH_VALUE        "/sys/class/gpio/gpio67/value" 
 
 #define SPEED_OF_SOUND_CM_PER_SEC 34300 // Speed of sound in cm/s
 #define SPEED_OF_SOUND_CM_PER_MS 34.3 // Speed of sound in cm/ms
@@ -26,8 +26,8 @@
 //static bool endProgram = false;
 
 void initializeUltrasonic() {
-    runCommand("config-pin p9.12 gpio");
-    runCommand("config-pin p9.14 gpio");
+    runCommand("config-pin p8.07 gpio");
+    runCommand("config-pin p8.08 gpio");
     writeToFile(ECHO_PATH_DIRECTION, "in");
     writeToFile(TRIGGER_PATH_DIRECTION, "out");
 }
