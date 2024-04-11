@@ -29,9 +29,21 @@ int main()
 
     if (humanPos<99999){
         drive_set_both_wheels(true);
-        sleepForMs(1000);
+        int count = 0;
+        while(count<100){
+            count++;
+            int distance = getDistance();
+            if(distance < 100){
+                drive_set_both_wheels(false);
+                buzzer_on();
+                sleepForMs(500);
+                buzzer_off();
+                break;
+            }
+        }
         drive_set_both_wheels(false);
     }
+
 
 
     drive_cleanup();
