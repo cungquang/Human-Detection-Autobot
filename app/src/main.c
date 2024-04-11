@@ -40,6 +40,7 @@ int main()
                 buzzer_off();
                 break;
             }
+            sleepForMs(100);
         }
         drive_set_both_wheels(false);
     }
