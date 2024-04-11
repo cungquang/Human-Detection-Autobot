@@ -1,5 +1,5 @@
-#include "hal/drive.h"
-#include "hal/helpers.h"
+#include "drive.h"
+#include "helpers.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -26,7 +26,7 @@ static long Tcp_getSizeOfFile(FILE *image_file);
 static void Tcp_sendMetadata(long image_size, FILE *image_file);
 static int Tcp_getCofirmation(FILE *image_file);
 static void Tcp_sendChunksOfImage(FILE *image_file);
-static int Tcp_getGapFromCenter();
+static int Tcp_getGapFromCenter(FILE *image_file);
 
 
 /*
@@ -84,7 +84,7 @@ int Tcp_sendImage(char *imagePath)
     if(canStart) Tcp_sendChunksOfImage(image_file);
     
     //Wait for response - distance_to_center
-    int result_fromAI = Tcp_getGapFromCenter();
+    int result_fromAI = Tcp_getGapFromCenter(image_file);
 
     fclose(image_file);
     return result_fromAI;
@@ -154,12 +154,15 @@ static int Tcp_getCofirmation(FILE *image_file)
     return 1;
 }
 
-static int Tcp_getGapFromCenter()
+static int Tcp_getGapFromCenter(FILE *image_file)
 {
     int received_value = 0;
     ssize_t bytes_received = recv(python_server_socket, &received_value, sizeof(received_value), 0);
     if (bytes_received != sizeof(received_value)) {
         // Handle error
+        perror("Invalid return data type");
+        fclose(image_file);
+        exit(EXIT_FAILURE);
     } 
 
     int distance_from_center = ntohl(received_value);
@@ -185,10 +188,10 @@ static void Tcp_sendChunksOfImage(FILE *image_file)
         memset(buffer, 0, sizeof(buffer));
 
         //wait for confirmation from server
-        if(!Tcp_getCofirmation(image_file)) 
-        {
-            perror("Image unable to completely send");
-            exit(EXIT_FAILURE);
-        }
+        // if(!Tcp_getCofirmation(image_file)) 
+        // {
+        //     perror("Image unable to completely send");
+        //     exit(EXIT_FAILURE);
+        // }
     }
 }
