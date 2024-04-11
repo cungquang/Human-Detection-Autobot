@@ -5,6 +5,7 @@
 #include "app_helper.h"
 #include "buzzer.h"
 #include "drive.h"
+#include "ultrasonic.h"
 
 void camera_operation(void)
 {
@@ -25,20 +26,15 @@ void camera_operation(void)
 int main_operation(void)
 {
     Pwm_init();
-    drive_init();    
-    
-    camera_operation();
-
-    for(int i =0;i<10;i++){
-        turn_left(90);
-        turn_right(90);
-        drive_set_both_wheels(true);
-        sleepForMs(250);
-        drive_set_both_wheels(false);
-        sleepForMs(250);
+    drive_init();  
+    initializeUltrasonic();
+    double distance = 0;
+    for (int i=0;i<1;i++)
+    {
+        distance = getDistance();
+        printf("Distance: %f cm\n", distance);
+        sleepForMs(1000);
     }
-    
-    camera_operation();
 
     drive_cleanup();
     return 0;
