@@ -39,7 +39,7 @@ double getDistance(){
     intmax_t initialTime = 0;
     intmax_t stopTime = 0;
     intmax_t elapsed_time_ns = 0;
-    intmax_t timeout_ns= 1000000000; // 1 second
+    intmax_t timeout_ns= 80000000; // 80 ms
 
     writeToFile(TRIGGER_PATH_VALUE, "1");
     sleepForMs(0.001);  // Wait 0.001ms
