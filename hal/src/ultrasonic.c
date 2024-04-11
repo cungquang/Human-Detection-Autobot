@@ -39,7 +39,7 @@ double getDistance(){
     intmax_t initialTime = 0;
     intmax_t stopTime = 0;
     intmax_t elapsed_time_ns = 0;
-    intmax_t timeout_ns= 80000000; // 80 ms
+    intmax_t timeout_ns= 500000000; // 500 ms
 
     writeToFile(TRIGGER_PATH_VALUE, "1");
     sleepForMs(0.001);  // Wait 0.001ms
@@ -58,6 +58,7 @@ double getDistance(){
     }
 
     if (elapsed_time_ns >= timeout_ns) {
+        printf("Timeout! Object is too far.\n");
         return -1;
     } else {
         intmax_t timeElapsed = stopTime - startTime;
@@ -67,6 +68,7 @@ double getDistance(){
         //printf("Time elapsed is: %lld ms\n", timeElapsed);
         if (distance < 0)
         {
+            printf("Distance returned as negative!\n");
             return -1;
         } else {
             return distance;
@@ -85,7 +87,7 @@ void* ultrasonicLoop() {
         intmax_t initialTime = 0;
         intmax_t stopTime = 0;
         intmax_t elapsed_time_ns = 0;
-        intmax_t timeout_ns= 1000000000; // 1 second
+        intmax_t timeout_ns= 80000000; // 80ms
         // Send a 10us pulse to trigger pin
         writeToFile(TRIGGER_PATH_VALUE, "1");
         sleepForMs(0.001);  // Wait 0.001ms

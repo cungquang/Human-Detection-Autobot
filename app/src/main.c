@@ -23,12 +23,12 @@ int main()
     drive_init();  
     initializeUltrasonic();
 
-    for (int i =0; i<20; i++){
-        double distance = getDistance();
-        printf("distance %lf\n",distance);
-        sleepForMs(1000);
+   
+    for (int i =0;i<10;i++){
+        //double distance = getDistance();
+        //printf("distance %lf\n",distance);
+        //sleepForMs(1000);
     }
-
 
     int humanPos;
     humanPos = camera_operation();
@@ -40,7 +40,7 @@ int main()
             count++;
             double distance = getDistance();
             printf("distance %lf\n",distance);
-            if(distance < 100 && distance > 0){
+            if(distance < 30 && distance > 0){
                 printf("stopping after detection\n");
                 drive_set_both_wheels(false);
                 play_sound();
