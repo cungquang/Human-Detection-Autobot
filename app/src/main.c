@@ -23,7 +23,11 @@ int main()
     drive_init();  
     initializeUltrasonic();
 
-    
+    for (int i =0; i<20; i++){
+        double distance = getDistance();
+        printf("distance %lf\n",distance);
+        sleepForMs(1000);
+    }
 
 
     int humanPos;
