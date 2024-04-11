@@ -24,7 +24,7 @@ int main()
     initializeUltrasonic();
 
    
-    for (int i =0;i<10;i++){
+    for (int i =0;i<5;i++){
         double distance = getDistance();
         printf("distance %lf\n",distance);
         sleepForMs(1000);
@@ -36,7 +36,7 @@ int main()
     if (humanPos<99999){
         drive_set_both_wheels(true);
         int count = 0;
-        while(count<50){
+        while(count<5){
             count++;
             double distance = getDistance();
             printf("distance %lf\n",distance);
@@ -49,6 +49,12 @@ int main()
             sleepForMs(1000);
         }
         drive_set_both_wheels(false);
+    }
+    sleepForMs(1000);
+    for (int i =0;i<5;i++){
+        double distance = getDistance();
+        printf("distance %lf\n",distance);
+        sleepForMs(1000);
     }
 
 

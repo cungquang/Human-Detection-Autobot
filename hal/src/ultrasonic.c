@@ -50,18 +50,13 @@ double getDistance(){
         startTime = getCurrentTimeNanoseconds();
         elapsed_time_ns = startTime - initialTime;
     }
-    printf("elapsed time for echo to go high in ns: %lld\n", elapsed_time_ns);
     elapsed_time_ns = 0;
-    printf("Echo value path: %d\n", valueReader(ECHO_PATH_VALUE));
     while (valueReader(ECHO_PATH_VALUE) == 1 && elapsed_time_ns < timeout_ns) {
         //printf("Waiting for echo to return\n");
         stopTime = getCurrentTimeNanoseconds();
         elapsed_time_ns = stopTime - startTime;
     }
 
-    printf("elapsed time for echo to go low in ns: %lld\n", elapsed_time_ns);
-    printf("startTime %lld\n",startTime);
-    printf("stoptime: %lld\n", stopTime);
     if (elapsed_time_ns >= timeout_ns) {
         printf("Timeout! Object is too far.\n");
         return -1;
