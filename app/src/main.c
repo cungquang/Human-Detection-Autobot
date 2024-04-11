@@ -10,8 +10,7 @@
 void camera_operation(void)
 {
     Tcp_init();
-    //char *imagePath = captureImage();
-    char *imagePath="./image_10_23-12-39.jpg";
+    char *imagePath = captureImage();
     int result_fromAI = Tcp_sendImage(imagePath);
 
     if (result_fromAI >= 99999)
@@ -29,7 +28,7 @@ int main_operation(void)
     drive_init();  
     initializeUltrasonic();
     double distance = 0;
-    for (int i=0;i<1;i++)
+    for (int i=0;i<10;i++)
     {
         distance = getDistance();
         printf("Distance: %f cm\n", distance);
@@ -43,24 +42,17 @@ int main_operation(void)
 
 void tcp_testing(void)
 {
-    Tcp_init();
-    char *imagePath = "./image_10_23-17-21.jpg";
-    int result_fromAI = Tcp_sendImage(imagePath);
-    Tcp_cleanUp();
+    Pwm_init();
+    drive_init();  
 
-    if (result_fromAI >= 99999)
+    for(int i = 0; i < 10; i++)
     {
-        printf("No human detected within the image!\n");
-    } else {
-        printf("Result from AI: %d pixel\n", result_fromAI);
+
     }
 }
 
 int main() 
 {
-    for(int i = 0; i < 30; i++)
-    {
-        tcp_testing();
-    }
+    main_operation();
     return 0;
 }

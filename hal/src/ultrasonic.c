@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "hal_helper.h"
 #include "app_helper.h"
-#include "ultrasonic_sensor.h"
+#include "ultrasonic.h"
 #include <stdint.h>
 #include <time.h>
 #include <pthread.h>
@@ -23,7 +23,6 @@
 #define SPEED_OF_SOUND_CM_PER_US 0.0343 // Speed of sound in cm/us
 #define SPEED_OF_SOUND_CM_PER_NS  0.0000343 // Speed of sound in cm/ns
 
-static pthread_t ultrasonicThread;
 static bool endProgram = false;
 
 void initializeUltrasonic() {
@@ -125,14 +124,3 @@ void* ultrasonicLoop() {
     return 0;
 }
 
-
-
-void ultrasonicStartup() {
-    initializeSensor();
-    pthread_create(&ultrasonicThread, NULL, ultrasonicLoop, NULL);
-}
-
-void ultrasonicShutdown() {
-    endProgram = true;
-    pthread_join(ultrasonicThread, NULL);
-}
