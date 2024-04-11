@@ -99,7 +99,7 @@ def identify_human_position(image_path):
         distance = calculate_distance_to_center(image_path, human)
         return distance
     else:
-        return None
+        return 99999
 
 #processing image
 def process_image(image_path):
@@ -144,7 +144,7 @@ def handle_client_image(client_connection):
             bytes_received += len(chunk)
 
             #slow down the transferring data - send confirmation
-            client_connection.send(b"okay")
+            #client_connection.send(b"okay")
         
         print("Total bytes received:", len(image_data))
 
