@@ -23,21 +23,23 @@ int main()
     drive_init();  
     initializeUltrasonic();
 
+    
+
 
     int humanPos;
     humanPos = camera_operation();
-
+    printf("humanPos: %d\n",humanPos);
     if (humanPos<99999){
         drive_set_both_wheels(true);
         int count = 0;
-        while(count<100){
+        while(count<50){
             count++;
-            int distance = getDistance();
-            if(distance < 100){
+            double distance = getDistance();
+            printf("distance %lf\n",distance);
+            if(distance < 100 && distance > 0){
+                printf("stopping after detection\n");
                 drive_set_both_wheels(false);
-                buzzer_on();
-                sleepForMs(500);
-                buzzer_off();
+                play_sound();
                 break;
             }
             sleepForMs(100);
