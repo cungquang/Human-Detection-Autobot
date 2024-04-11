@@ -23,7 +23,7 @@
 #define SPEED_OF_SOUND_CM_PER_US 0.0343 // Speed of sound in cm/us
 #define SPEED_OF_SOUND_CM_PER_NS  0.0000343 // Speed of sound in cm/ns
 
-static bool endProgram = false;
+//static bool endProgram = false;
 
 void initializeUltrasonic() {
     runCommand("config-pin p9.12 gpio");
@@ -39,7 +39,7 @@ double getDistance(){
     intmax_t initialTime = 0;
     intmax_t stopTime = 0;
     intmax_t elapsed_time_ns = 0;
-    intmax_t timeout_ns= 500000000; // 500 ms
+    intmax_t timeout_ns= 1000000000; // 1 second
 
     writeToFile(TRIGGER_PATH_VALUE, "1");
     sleepForMs(0.001);  // Wait 0.001ms
@@ -52,12 +52,16 @@ double getDistance(){
     }
     printf("elapsed time for echo to go high in ns: %lld\n", elapsed_time_ns);
     elapsed_time_ns = 0;
+    printf("Echo value path: %d\n", valueReader(ECHO_PATH_VALUE));
     while (valueReader(ECHO_PATH_VALUE) == 1 && elapsed_time_ns < timeout_ns) {
         //printf("Waiting for echo to return\n");
         stopTime = getCurrentTimeNanoseconds();
         elapsed_time_ns = stopTime - startTime;
     }
+
     printf("elapsed time for echo to go low in ns: %lld\n", elapsed_time_ns);
+    printf("startTime %lld\n",startTime);
+    printf("stoptime: %lld\n", stopTime);
     if (elapsed_time_ns >= timeout_ns) {
         printf("Timeout! Object is too far.\n");
         return -1;

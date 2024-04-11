@@ -25,9 +25,9 @@ int main()
 
    
     for (int i =0;i<10;i++){
-        //double distance = getDistance();
-        //printf("distance %lf\n",distance);
-        //sleepForMs(1000);
+        double distance = getDistance();
+        printf("distance %lf\n",distance);
+        sleepForMs(1000);
     }
 
     int humanPos;
@@ -40,13 +40,13 @@ int main()
             count++;
             double distance = getDistance();
             printf("distance %lf\n",distance);
-            if(distance < 30 && distance > 0){
+            if(distance < 5 && distance > 0){
                 printf("stopping after detection\n");
                 drive_set_both_wheels(false);
                 play_sound();
                 break;
             }
-            sleepForMs(100);
+            sleepForMs(1000);
         }
         drive_set_both_wheels(false);
     }
