@@ -5,5 +5,6 @@
 void initializeUltrasonic();
 void* ultrasonicLoop();
 double getDistance();
+void ultrasonicShutdown();
 
 #endif

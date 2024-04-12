@@ -38,27 +38,26 @@ int main()
     int count = 0;
     while(count<5){
         count++;
-        double distance = getDistance();
-        printf("distance %lf\n",distance);
-        if(distance < 5 && distance > 0){
-            printf("stopping after detection\n");
-            drive_set_both_wheels(false);
-            play_sound();
-            break;
-        }
+        // double distance = getDistance();
+        // printf("distance %lf\n",distance);
+        // if(distance < 5 && distance > 0){
+        //     printf("stopping after detection\n");
+        //     drive_set_both_wheels(false);
+        //     play_sound();
+        //     break;
+        // }
         sleepForMs(1000);
     }
     drive_set_both_wheels(false);
     //}
     sleepForMs(1000);
     for (int i =0;i<5;i++){
-        double distance = getDistance();
-        printf("distance %lf\n",distance);
+        // double distance = getDistance();
+        // printf("distance %lf\n",distance);
         sleepForMs(1000);
     }
 
-
-
+    ultrasonicShutdown();
     drive_cleanup();
     return 0;
 }
