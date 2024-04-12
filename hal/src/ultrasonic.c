@@ -128,6 +128,11 @@ intmax_t getDistance(){
                 //double timeElapsedInSec = (double)timeElapsed/1000;
                 // Calculate distance in centimeters (assumes speed of sound is 343m/s)
                 distance[count] = timeElapsed * SPEED_OF_SOUND_CM_PER_NS / 2.0;  // in cm
+                if (distance[count] < 0)
+                {
+                    distance[count] = 650;
+                }
+                
                 //printf("Time elapsed is: %lld ms\n", timeElapsed);
             }
             count++;
