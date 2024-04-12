@@ -14,8 +14,11 @@
 
 // Joystick File Paths
 #define JOYSTICK_UP_PATH    "/sys/class/gpio/gpio26"
+#define JOYSTICK_DOWN_PATH    "/sys/class/gpio/gpio46"
+#define JOYSTICK_RIGHT_PATH    "/sys/class/gpio/gpio47"
+#define JOYSTICK_LEFT_PATH    "/sys/class/gpio/gpio65"
 
-#define JOYSTICK_MAX_NUMBER_DIRECTIONS  1
+#define JOYSTICK_MAX_NUMBER_DIRECTIONS  4
 
 static struct JoystickDirection joystickDirectionArray[JOYSTICK_MAX_NUMBER_DIRECTIONS];
 static bool initialized = false;
@@ -27,6 +30,9 @@ static bool initialized = false;
 // Run the linux commands to set the pins as GPIO
 static void configureJoystickPins()  {
     runCommand("config-pin p8.14 gpio");
+    runCommand("config-pin p8.15 gpio");
+    runCommand("config-pin p8.16 gpio");
+    runCommand("config-pin p8.18 gpio");
 }
 
 
