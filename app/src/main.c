@@ -45,14 +45,14 @@ int main()
             //printf("humanPos: %d\n",humanPos);
         }
         if(humanPos > 100){
-            printf("Turning right\n");
-            turn_right(humanPos/100);
+            printf("Turning left\n");
+            turn_left(humanPos/100);
             sleepForMs(1000);
             continue;
         }
         else if(humanPos < 100){
-            printf("Turning left\n");
-            turn_left(humanPos/100);
+            printf("Turning right\n");
+            turn_right(humanPos/100);
             sleepForMs(1000);
             continue;
         }
