@@ -29,5 +29,5 @@ void initializeJoystickDirection(struct JoystickDirection *joystick, const char 
 }
 
 bool isPressed(struct JoystickDirection *joystick) {
-    return valueReader(joystick->valuePath);
+    return !valueReader(joystick->valuePath);
 }

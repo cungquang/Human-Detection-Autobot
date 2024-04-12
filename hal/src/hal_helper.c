@@ -110,3 +110,19 @@ void fileWriter(char* filePath, char* data) {
 
 	fclose(file);
 }
+
+// Provided by Brian Fraser
+void write_to_file(const char* filename, int value){
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error OPENING %s.", filename);
+        exit(1);
+    }
+    
+    int writtenValue = fprintf(file, "%d" , value);
+    if (writtenValue <= 0){
+        printf("ERROR WRITING DATA");
+        exit(1);
+    }
+    fclose(file);
+}

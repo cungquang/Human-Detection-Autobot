@@ -8,6 +8,7 @@
 #include "ultrasonic.h"
 #include "hal_helper.h"
 #include "joystick.h"
+#include "display.h"
 
 static int pixelToDegree = 50;
 
@@ -48,7 +49,8 @@ int main()
     drive_init();  
     initializeUltrasonic();
     initializeJoystick();
-
+    //Display_init();
+    
     int humanPos;
     intmax_t distanceToTarget;
     while(true){
@@ -107,17 +109,14 @@ int main()
         // drive_set_both_wheels(true);
         if(distanceToTarget > 180){
             drive_set_both_wheels(true);
-            for (size_t i = 0; i < 20; i++)
-            {
-                if (checkJoystick() != -1)
-                {
-                    endAll();
-                    return 1;
-                }
-                sleepForMs(100); // drives for 60 cm per second
-            }
+            sleepForMs(1000);
             //distanceToTarget = getDistance();
             drive_set_both_wheels(false);
+            if (checkJoystick() != -1)
+            {
+                endAll();
+                return 1;
+            }
             sleepForMs(3000);
             distanceToTarget = getDistance();
             printf("avg distance to target in main: %lld\n",distanceToTarget);
@@ -137,16 +136,13 @@ int main()
     while (distanceToTarget > 150)
     {
         drive_set_both_wheels(true);
-        for (size_t i = 0; i < 10; i++)
-        {
-            if (checkJoystick() != -1)
-            {
-                endAll();
-                return 1;
-            }
-            sleepForMs((((double)distanceToTarget/2.0)/60.0)*100.0);
-        }
+        sleepForMs((((double)distanceToTarget/2.0)/60.0)*1000.0);
         drive_set_both_wheels(false);
+        if (checkJoystick() != -1)
+        {
+            endAll();
+            return 1;
+        }
         sleepForMs(3000);
         distanceToTarget = getDistance();
         printf("avg distance to target in fine tune: %lld\n",distanceToTarget);
@@ -156,9 +152,10 @@ int main()
 }
 
 void endAll() {
-    printf("Quitting Program!");
+    printf("Quitting Program!\n");
     ultrasonicShutdown();
     drive_cleanup();
+    //Display_cleanup();
 }
 
 //    int main() {

@@ -28,6 +28,11 @@ struct buffer {
         size_t length;
 };
 
+static int pictureCount = 0;
+
+int getPicCount() {
+        return pictureCount;
+}
 
 static void xioctl(int fh, int request, void *arg)
 {
@@ -120,6 +125,7 @@ void configureCamera(){
 }
 
 char* captureImage() {
+        pictureCount++;
     // void* buffer_start;
     // buffer_start = mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
 

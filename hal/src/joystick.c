@@ -48,6 +48,7 @@ int checkJoystick() {
         if (isPressed(&joystickDirectionArray[i]))
         {
             // Return the direction the joystick is pressed in
+            printf("Joystick is pressed!\n");
             return i;
         }
     }

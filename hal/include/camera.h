@@ -4,5 +4,6 @@
 void configureCamera();
 char* captureImage();
 void cameraShutdown();
+int getPicCount();
 
 #endif /* CAMERA_H */
