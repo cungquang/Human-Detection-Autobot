@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <pthread.h>
+#include "joystick.h"
 
 #define ECHO_PATH_DIRECTION       "/sys/class/gpio/gpio66/direction" // 
 #define ECHO_PATH_VALUE       "/sys/class/gpio/gpio66/value" //
@@ -137,7 +138,7 @@ void* ultrasonicLoop() {
 // }
 
 intmax_t getDistance(){
-    sleepForMs(2500);
+    sleepForMs(5000);
     pthread_mutex_lock(&mutex);
     intmax_t totalDistance = distance[0] + distance[1] + distance[2]+ distance[3] + distance[4];
     pthread_mutex_unlock(&mutex);
