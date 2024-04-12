@@ -40,6 +40,9 @@ static void configureJoystickPins()  {
 void initializeJoystick() {
     configureJoystickPins();
     initializeJoystickDirection(&joystickDirectionArray[UP_DIRECTION], JOYSTICK_UP_PATH);
+    initializeJoystickDirection(&joystickDirectionArray[DOWN_DIRECTION], JOYSTICK_DOWN_PATH);
+    initializeJoystickDirection(&joystickDirectionArray[RIGHT_DIRECTION], JOYSTICK_RIGHT_PATH);
+    initializeJoystickDirection(&joystickDirectionArray[LEFT_DIRECTION], JOYSTICK_LEFT_PATH);
 
     initialized = true;
     //pthread_create(&joystickThread, NULL, startJoystickThread, NULL);
