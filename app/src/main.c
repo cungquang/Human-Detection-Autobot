@@ -49,7 +49,7 @@ int main()
     drive_init();  
     initializeUltrasonic();
     initializeJoystick();
-    //Display_init();
+    Display_init();
     
     int humanPos;
     intmax_t distanceToTarget;
@@ -155,7 +155,7 @@ void endAll() {
     printf("Quitting Program!\n");
     ultrasonicShutdown();
     drive_cleanup();
-    //Display_cleanup();
+    Display_cleanup();
 }
 
 //    int main() {
