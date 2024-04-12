@@ -18,6 +18,9 @@
 #define PYTHON_SERVER_IP "192.168.148.129"
 #define PYTHON_SERVER_PORT 6666
 
+// timeout
+int connection_timeout = 0;
+
 //Socket
 static int python_server_socket;
 
@@ -52,16 +55,22 @@ void Tcp_init()
     // Connect to server
     if (connect(python_server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Connection failed\n");
-        exit(EXIT_FAILURE);
+        if (connection_timeout <= 3)
+        {
+            connection_timeout++;
+            Tcp_init();
+        }
+    } else {
+        printf("Successfully connected to server %s:%d\n", inet_ntoa(server_addr.sin_addr), ntohs(server_addr.sin_port));
     }
 
-    printf("Successfully connected to server %s:%d\n", inet_ntoa(server_addr.sin_addr), ntohs(server_addr.sin_port));
 }
 
 void Tcp_cleanUp()
 {
     // Clean up
     if(python_server_socket) close(python_server_socket);
+    connection_timeout = 0;
 }
 
 int Tcp_sendImage(char *imagePath)
