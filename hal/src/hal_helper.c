@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hal_helper.h"
+#include "stdbool.h"
 
 //Write to GPIO file
 void writeToFile(const char* fileToWriteGpio, const char* content) {
@@ -91,4 +92,21 @@ void write_int_to_file(const char* filename, int value){
         exit(1);
     }
     fclose(file);
+}
+
+void fileWriter(char* filePath, char* data) {
+    FILE *file = fopen(filePath, "w");
+
+	if (file == NULL){
+    	printf("ERROR OPENING %s\n", filePath);
+    	exit(1);
+	}
+
+    int charWritten = fprintf(file, "%s", data);
+    if (charWritten <= 0) {
+        printf("ERROR WRITING DATA\n");
+        exit(1);
+    }
+
+	fclose(file);
 }

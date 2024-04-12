@@ -7,8 +7,11 @@
 #include "drive.h"
 #include "ultrasonic.h"
 #include "hal_helper.h"
+#include "joystick.h"
 
 static int pixelToDegree = 50;
+
+void endAll();
 
 int camera_operation(void)
 {
@@ -44,13 +47,19 @@ int main()
     Pwm_init();
     drive_init();  
     initializeUltrasonic();
-
+    initializeJoystick();
 
     int humanPos;
     intmax_t distanceToTarget;
     while(true){
 
         humanPos = camera_operation();
+        if (checkJoystick() != -1)
+        {
+            endAll();
+            return 1;
+        }
+        
         printf("humanPos: %d\n",humanPos);
         if (humanPos >= 99999)
         {
@@ -64,6 +73,7 @@ int main()
             if (hasNotSeenPerson == 2 && hasSeenPerson == 1)
             {
                 printf("Found the person! Returning");
+                endAll();
                 return 1;
             }
             continue;
@@ -85,7 +95,11 @@ int main()
         hasSeenPerson = 1;
         printf("final humanPos: %d\n",humanPos);
         //break;
-
+        if (checkJoystick() != -1)
+        {
+            endAll();
+            return 1;
+        }
          // printf("humanPos: %d\n",humanPos);
          //sleepForMs(1000);
         distanceToTarget = getDistance();
@@ -93,7 +107,15 @@ int main()
         // drive_set_both_wheels(true);
         if(distanceToTarget > 180){
             drive_set_both_wheels(true);
-            sleepForMs(2000); // drives for 60 cm per second
+            for (size_t i = 0; i < 20; i++)
+            {
+                if (checkJoystick() != -1)
+                {
+                    endAll();
+                    return 1;
+                }
+                sleepForMs(100); // drives for 60 cm per second
+            }
             //distanceToTarget = getDistance();
             drive_set_both_wheels(false);
             sleepForMs(3000);
@@ -107,22 +129,36 @@ int main()
             break;
         }
     }
-
+    if (checkJoystick() != -1)
+    {
+        endAll();
+        return 1;
+    }
     while (distanceToTarget > 150)
     {
         drive_set_both_wheels(true);
-        sleepForMs((((double)distanceToTarget/2.0)/60.0)*1000.0);
+        for (size_t i = 0; i < 10; i++)
+        {
+            if (checkJoystick() != -1)
+            {
+                endAll();
+                return 1;
+            }
+            sleepForMs((((double)distanceToTarget/2.0)/60.0)*100.0);
+        }
         drive_set_both_wheels(false);
         sleepForMs(3000);
         distanceToTarget = getDistance();
         printf("avg distance to target in fine tune: %lld\n",distanceToTarget);
     }
-      
-    //play_sound();
+    endAll();
+    return 0;
+}
 
+void endAll() {
+    printf("Quitting Program!");
     ultrasonicShutdown();
     drive_cleanup();
-    return 0;
 }
 
 //    int main() {
