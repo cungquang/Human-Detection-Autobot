@@ -6,6 +6,7 @@
 #include "buzzer.h"
 #include "drive.h"
 #include "ultrasonic.h"
+#include "hal_helper.h"
 
 int camera_operation(void)
 {
@@ -73,7 +74,7 @@ int main()
             // count++;
         }
         else{
-            printf("engaging fine tune mode.\n")
+            printf("engaging fine tune mode.\n");
             break;
         
         }
