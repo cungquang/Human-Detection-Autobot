@@ -134,7 +134,7 @@ int main2()
         while (true)
         {
             intmax_t distanceToTarget = getDistance();
-            printf("Average distance: is %d", distanceToTarget);
+            printf("Average distance: is %lld", distanceToTarget);
         }
     return 0;
    }
