@@ -124,7 +124,7 @@ intmax_t getDistance(){
                 {
                     printf("Distance returned as negative!\n");
                 } else {
-                    printf("Distance: %lld cm\n", distance[count]);
+                    //printf("Distance: %lld cm\n", distance[count]);
                 }
                 count++;
             }
