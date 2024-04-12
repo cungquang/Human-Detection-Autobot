@@ -67,7 +67,7 @@ int main()
         {
             printf("no human found\n");
             turn_right(12);
-            sleepForMs(250);
+            sleepForMs(1000);
             if (hasSeenPerson == 1)
             {
                 hasNotSeenPerson++;
@@ -85,13 +85,13 @@ int main()
         if(humanPos > 150){
             printf("Turning left\n");
             turn_left(humanPos/pixelToDegree);
-            sleepForMs(250);
+            sleepForMs(1000);
             continue;
         }
         else if(humanPos < -150){
             printf("Turning right\n");
             turn_right(humanPos/pixelToDegree);
-            sleepForMs(250);
+            sleepForMs(1000);
             continue;
         }
         hasSeenPerson = 1;
@@ -117,7 +117,7 @@ int main()
                 endAll();
                 return 1;
             }
-            //sleepForMs(3000);
+            sleepForMs(1500);
             distanceToTarget = getDistance();
             printf("avg distance to target in main: %lld\n",distanceToTarget);
             // count++;
@@ -143,7 +143,7 @@ int main()
             endAll();
             return 1;
         }
-        sleepForMs(250);
+        sleepForMs(1000);
         distanceToTarget = getDistance();
         printf("avg distance to target in fine tune: %lld\n",distanceToTarget);
     }
