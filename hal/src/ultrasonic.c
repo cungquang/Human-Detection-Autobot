@@ -77,7 +77,7 @@ void* ultrasonicLoop() {
             {
                 printf("Distance returned as negative!\n");
             } else {
-                //printf("Distance: %jd cm\n", distance);
+                printf("Distance: %jd cm\n", distance);
             }
         }
         
