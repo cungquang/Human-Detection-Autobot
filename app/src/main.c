@@ -38,7 +38,7 @@ bool checkSensor() {
 int hasSeenPerson = 0;
 int hasNotSeenPerson = 0;
 
-int main() 
+int main2() 
 {
     //int count = 0;
     Pwm_init();
@@ -122,12 +122,19 @@ int main()
         distanceToTarget = getDistance();
         printf("avg distance to target in fine tune: %lld\n",distanceToTarget);
     }
-   
-    
-    
+      
     //play_sound();
 
     //ultrasonicShutdown();
     drive_cleanup();
     return 0;
 }
+
+   int main() {
+        while (true)
+        {
+            intmax_t distanceToTarget = getDistance();
+            printf("Average distance: is %d", distanceToTarget);
+        }
+    return 0;
+   }
