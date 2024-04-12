@@ -8,6 +8,8 @@
 #include "ultrasonic.h"
 #include "hal_helper.h"
 
+static int pixelToDegree = 50;
+
 int camera_operation(void)
 {
     Tcp_init();
@@ -47,13 +49,13 @@ int main()
         }
         if(humanPos > 100){
             printf("Turning left\n");
-            turn_left(humanPos/50);
+            turn_left(humanPos/pixelToDegree);
             sleepForMs(1000);
             continue;
         }
         else if(humanPos < 100){
             printf("Turning right\n");
-            turn_right(humanPos/50);
+            turn_right(humanPos/pixelToDegree);
             sleepForMs(1000);
             continue;
         }
