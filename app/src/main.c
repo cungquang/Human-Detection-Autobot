@@ -17,6 +17,7 @@ void endAll();
 int camera_operation(void)
 {
     Tcp_init();
+    sleepForMs(3000);
     char *imagePath = captureImage();
     sleepForMs(1000);
     int result_fromAI = Tcp_sendImage(imagePath);
