@@ -25,6 +25,19 @@ int camera_operation(void)
     return result_fromAI;
 }
 
+bool checkSensor() {
+    intmax_t distanceToTarget = getDistance();
+    if (distanceToTarget < 180)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+int hasSeenPerson = 0;
+int hasNotSeenPerson = 0;
+
 int main() 
 {
     //int count = 0;
@@ -44,6 +57,21 @@ int main()
             printf("no human found\n");
             turn_right(12);
             sleepForMs(1000);
+            if (hasSeenPerson == 1)
+            {
+                hasNotSeenPerson++;
+            }
+            if (hasNotSeenPerson <= 2)
+            {
+                if (checkSensor())
+                {
+                    hasNotSeenPerson = 0;
+                    break;
+                }
+            } else if (hasNotSeenPerson > 2) {
+                printf("Did not find the human, returning!");
+                return 1;
+            }
             continue;
             //humanPos = camera_operation();
             //printf("humanPos: %d\n",humanPos);
@@ -60,6 +88,7 @@ int main()
             sleepForMs(1000);
             continue;
         }
+        hasSeenPerson = 1;
         printf("final humanPos: %d\n",humanPos);
         //break;
 
