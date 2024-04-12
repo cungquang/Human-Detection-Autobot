@@ -27,7 +27,7 @@ static pthread_t ultrasonicThread;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 bool endProgram = false;
-intmax_t  distance[3];
+intmax_t  distance[5];
 int count = 0;
 
 //static bool endProgram = false;
@@ -84,7 +84,7 @@ void* ultrasonicLoop() {
         }
         pthread_mutex_unlock(&mutex);
         count++;
-        if (count > 2)
+        if (count > 4)
         {
             count = 0;
         }
@@ -141,9 +141,9 @@ void* ultrasonicLoop() {
 intmax_t getDistance(){
     sleepForMs(500);
     pthread_mutex_lock(&mutex);
-    intmax_t totalDistance = distance[0] + distance[1] + distance[2];
+    intmax_t totalDistance = distance[0] + distance[1] + distance[2]+ distance[3] + distance[4];
     pthread_mutex_unlock(&mutex);
-    return totalDistance/3;
+    return totalDistance/5;
 }
 
 void ultrasonicShutdown() {
