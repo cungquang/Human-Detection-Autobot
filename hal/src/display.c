@@ -1,24 +1,12 @@
 #include "display.h"
-#include "hal_helper.h"
+#include "helpers.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <pthread.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
-#include "camera.h"
-#include "app_helper.h"
-
-static pthread_t displayThread;
-static bool endProgram = false;
-
-static int initI2cBus(char* bus, int address);
-static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char value);
-
 
 #define I2CDRV_LINUX_BUS0 "/dev/i2c-0"
 #define I2CDRV_LINUX_BUS1 "/dev/i2c-1"
@@ -26,194 +14,116 @@ static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char va
 
 #define I2C_DEVICE_ADDRESS 0x20
 
-// for green zencape
-/* #define REG_DIRA 0x00
+#define REG_DIRA 0x00
 #define REG_DIRB 0x01
 #define REG_OUTA 0x14
 #define REG_OUTB 0x15
 
-#define GPIO_A  "/sys/class/gpio/gpio61/value"
-#define GPIO_B  "/sys/class/gpio/gpio44/value" */
+#define gpio_61_value_path "/sys/class/gpio/gpio61/value"
+#define gpio_44_value_path "/sys/class/gpio/gpio44/value"
 
-// for red zencape
-#define REG_DIRA 0x02
-#define REG_DIRB 0x03
-#define REG_OUTA 0x00
-#define REG_OUTB 0x01
+int bottom_patterns[11] = {0xa1,0x80,0x31,0xb0,0x90,0xb0,0xb1,0x04,0xb1,0x90,0x00};
+int top_patterns[11] = {0x86,0x12,0x0e,0x06,0x8a,0x8c,0x8c,0x14,0x8e,0x8e,0x00};
 
-#define GPIO_A  "/sys/class/gpio/gpio44/value"
-#define GPIO_B  "/sys/class/gpio/gpio61/value"
 
-typedef struct {
-    unsigned char lower;
-    unsigned char upper;
-}hex_display_value;
+static int initI2cBus(char* bus, int address);
+static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char value);
+static void internalCleanupSegDisplay();
 
-// For green zen cape
-/* static hex_display_value display_value_in_hex(int digit){
-    unsigned char lower, upper;
 
-    switch (digit) {
-        case 0:
-            lower = 0xA1 ; upper = 0x86;
-            break;
-        case 1:
-            lower = 0x01; upper = 0x80;
-            break;
-        case 2:
-            lower = 0x31; upper = 0x0E;
-            break;
-        case 3:
-            lower = 0x21; upper = 0x8C;
-            break;
-        case 4:
-            lower = 0x91; upper = 0x88;
-            break;
-        case 5:
-            lower = 0xB0; upper = 0x8C;
-            break;
-        case 6:
-            lower = 0xB0; upper = 0x8E;
-            break;
-        case 7:
-            lower = 0x21; upper = 0x80;
-            break;
-        case 8:
-            lower = 0xB1; upper = 0x8E;
-            break;
-        case 9:
-            lower = 0xB1; upper = 0x8C;
-            break;
-        default:
-            printf("Invalid digit\n");
-            exit(1);
-    }
-    hex_display_value return_value;
-    return_value.lower = lower; 
-    return_value.upper = upper;     
-    return return_value;
-} */
+static int i2cFileDesc;
+static bool shutdownComplete = false;
 
-// For red zen cape
-static hex_display_value display_value_in_hex(int digit){
-    unsigned char lower, upper;
+static bool continueRunning = true;
 
-    switch (digit) {
-        case 0:
-            lower = 0xD0 ; upper = 0xA1;
-            break;
-        case 1:
-            lower = 0xC0; upper = 0x00;
-            break;
-        case 2:
-            lower = 0x98; upper = 0x83;
-            break;
-        case 3:
-            lower = 0xD8; upper = 0x03;
-            break;
-        case 4:
-            lower = 0xC8; upper = 0x22;
-            break;
-        case 5:
-            lower = 0x58; upper = 0x23;
-            break;
-        case 6:
-            lower = 0x58; upper = 0xA3;
-            break;
-        case 7:
-            lower = 0xC0; upper = 0x01;
-            break;
-        case 8:
-            lower = 0xD8; upper = 0xA3;
-            break;
-        case 9:
-            lower = 0xD8; upper = 0x23;
-            break;
-        default:
-            printf("Invalid digit\n");
-            exit(1);
-    }
-    hex_display_value return_value;
-    return_value.lower = lower; 
-    return_value.upper = upper;     
-    return return_value;
+static int segDisplayFirstDigit = 10;
+static int segDisplaySecondDigit = 10;
+
+static pthread_t id;
+
+void initSegDisplay(){
+	i2cFileDesc = initI2cBus(I2CDRV_LINUX_BUS1, I2C_DEVICE_ADDRESS);
+
+	writeI2cReg(i2cFileDesc, REG_DIRA, 0x00);
+	writeI2cReg(i2cFileDesc, REG_DIRB, 0x00);
+
+	setIntValueInFile(gpio_61_value_path, 0);
+	setIntValueInFile(gpio_44_value_path, 0);
+
+	pthread_create(&id, NULL, segMain, NULL);
 }
 
-static void* Display_show(){
-    int i2cFileDesc = initI2cBus(I2CDRV_LINUX_BUS1, I2C_DEVICE_ADDRESS);
-    hex_display_value first_value, second_value;
-    int distance = 1;
-    
-    while(1){
-        if(endProgram){
-            write_to_file(GPIO_A, 0);
-            write_to_file(GPIO_B, 0);
-            close(i2cFileDesc);
-            return 0;
-        }
-        distance = getPicCount();
-        if(distance >= 100){
-            first_value = display_value_in_hex(9);
-            second_value = first_value;
-        }
-        else{
-            int first_digit = distance % 10;
-            distance = distance/10;
-            int second_digit = distance % 10;
-            first_value = display_value_in_hex(first_digit);
-            second_value = display_value_in_hex(second_digit);
-        }
-
-        // displaying 8*8 digits on bbg
-        write_to_file(GPIO_B,0);
-
-        // Drive an hour-glass looking character (Like an X with a bar on top & bottom)
-        writeI2cReg(i2cFileDesc, REG_OUTA, first_value.lower);
-        writeI2cReg(i2cFileDesc, REG_OUTB, first_value.upper);
-
-        write_to_file(GPIO_A,1);
-        sleepForMs(5);
-
-        write_to_file(GPIO_A,0);
-        writeI2cReg(i2cFileDesc, REG_OUTA, second_value.lower);
-        writeI2cReg(i2cFileDesc, REG_OUTB, second_value.upper);
-
-        write_to_file(GPIO_B,1);
-        sleepForMs(5);
-    }
+void setSegDisplay(int output){
+	if(output < 0){
+		segDisplayFirstDigit = 10;
+		segDisplaySecondDigit = 10;
+	}
+	else if(output < 100){
+		segDisplayFirstDigit = output / 10;
+		segDisplaySecondDigit = output % 10;
+	}
+	else{
+		segDisplayFirstDigit = 9;
+		segDisplaySecondDigit = 9;
+	}
 }
 
-static void config_display(){
-     runCommand("echo out > /sys/class/gpio/gpio61/direction");
-     runCommand("echo out > /sys/class/gpio/gpio44/direction");
-     runCommand("echo 1 > /sys/class/gpio/gpio61/value");
-     runCommand("echo 1 > /sys/class/gpio/gpio44/value");
-     runCommand("config-pin P9_18 i2c");
-     runCommand("config-pin P9_17 i2c");
-    
-    
-//  For green zencape    
-    // runCommand("i2cset -y 1 0x20 0x00 0x00");
-    // runCommand("i2cset -y 1 0x20 0x01 0x00");
+void* segMain()
+{	
+	while(continueRunning){
+		// Display the first digit
+		setIntValueInFile(gpio_61_value_path, 0);
+		setIntValueInFile(gpio_44_value_path, 0);
+		writeI2cReg(i2cFileDesc, REG_OUTA, bottom_patterns[segDisplayFirstDigit]);
+		writeI2cReg(i2cFileDesc, REG_OUTB, top_patterns[segDisplayFirstDigit]);
+		setIntValueInFile(gpio_61_value_path, 1);
+		setIntValueInFile(gpio_44_value_path, 0);
+		
 
-//  For red zencape, set both to off to begin with
-    runCommand("i2cset -y 1 0x20 0x02 0x00");
-    runCommand("i2cset -y 1 0x20 0x03 0x00");
+		//sleep 5 ms
+		usleep(5000);
+				
+		// Display the second digit
+		setIntValueInFile(gpio_61_value_path, 0);
+		setIntValueInFile(gpio_44_value_path, 0);
+		writeI2cReg(i2cFileDesc, REG_OUTA, bottom_patterns[segDisplaySecondDigit]);
+		writeI2cReg(i2cFileDesc, REG_OUTB, top_patterns[segDisplaySecondDigit]);
+		setIntValueInFile(gpio_61_value_path, 0);
+		setIntValueInFile(gpio_44_value_path, 1);
+
+		//sleep 5 ms
+		usleep(5000);
+	}
+
+	// Turn off the display
+	writeI2cReg(i2cFileDesc, REG_OUTA, bottom_patterns[10]);
+	writeI2cReg(i2cFileDesc, REG_OUTB, top_patterns[10]);
+	
+	internalCleanupSegDisplay();
+	return NULL;
 }
 
-void Display_init(void) {
-    config_display();
-    pthread_create(&displayThread, NULL, Display_show, NULL);
+pthread_t cleanupSegDisplay(){
+	continueRunning = false;
+	while(!shutdownComplete){
+		usleep(10000);
+	}
+	return id;
 }
 
-void Display_cleanup(void) {
-    endProgram = true;
-    pthread_join(displayThread, NULL);
-}
-
-// Provided by Brian Fraser
 static int initI2cBus(char* bus, int address)
 {
+	// Run the config-pin command
+    system("config-pin p9_18 i2c  > /dev/null 2>&1");
+	system("config-pin p9_17 i2c  > /dev/null 2>&1");
+
+	system("echo out > /sys/class/gpio/gpio61/direction");
+	system("echo out > /sys/class/gpio/gpio44/direction");
+
+	system("i2cset -y 1  0x20 0x00 0x00  > /dev/null 2>&1");
+	system("i2cset -y 1  0x20 0x01 0x00  > /dev/null 2>&1");
+
+
 	int i2cFileDesc = open(bus, O_RDWR);
 	if (i2cFileDesc < 0) {
 		printf("I2C DRV: Unable to open bus for read/write (%s)\n", bus);
@@ -239,4 +149,11 @@ static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char va
 		perror("Unable to write i2c register");
 		exit(-1);
 	}
+}
+
+
+static void internalCleanupSegDisplay(){
+	// Cleanup I2C access;
+	close(i2cFileDesc);
+	shutdownComplete = true;
 }

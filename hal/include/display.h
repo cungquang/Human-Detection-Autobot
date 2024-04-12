@@ -1,11 +1,15 @@
-#ifndef _DISPLAY_H_
-#define _DISPLAY_H_
+//hardware abstraction layer for controlling 14-segment display
+#ifndef _SEG_H_
+#define _SEG_H_
 
-// HAL module that controls the led display
+#include <stdbool.h>
+#include <stdatomic.h>
+#include <pthread.h>
 
-// Start the display
-void Display_init(void);
-// Clean up the display
-void Display_cleanup(void);
+void initSegDisplay();
+void setSegDisplay(int digit);
+void* segMain();
+void startCleanupSegDisplay();
+pthread_t cleanupSegDisplay();
 
 #endif
