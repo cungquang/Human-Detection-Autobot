@@ -108,7 +108,7 @@ int main()
         }
     }
 
-    while (distanceToTarget > 80)
+    while (distanceToTarget > 150)
     {
         drive_set_both_wheels(true);
         sleepForMs((((double)distanceToTarget/2.0)/60.0)*1000.0);
