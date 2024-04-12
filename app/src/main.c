@@ -61,7 +61,7 @@ int main()
             {
                 hasNotSeenPerson++;
             }
-            if (hasNotSeenPerson <= 2)
+            if (hasNotSeenPerson <= 2 && hasSeenPerson == 1)
             {
                 if (checkSensor())
                 {
