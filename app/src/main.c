@@ -61,15 +61,9 @@ int main()
             {
                 hasNotSeenPerson++;
             }
-            if (hasNotSeenPerson <= 2 && hasSeenPerson == 1)
+            if (hasNotSeenPerson == 2 && hasSeenPerson == 1)
             {
-                if (checkSensor())
-                {
-                    hasNotSeenPerson = 0;
-                    break;
-                }
-            } else if (hasNotSeenPerson > 2) {
-                printf("Did not find the human, returning!");
+                printf("Found the person! Returning");
                 return 1;
             }
             continue;
