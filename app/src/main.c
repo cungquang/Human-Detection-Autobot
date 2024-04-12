@@ -47,13 +47,13 @@ int main()
             //humanPos = camera_operation();
             //printf("humanPos: %d\n",humanPos);
         }
-        if(humanPos > 100){
+        if(humanPos > 150){
             printf("Turning left\n");
             turn_left(humanPos/pixelToDegree);
             sleepForMs(1000);
             continue;
         }
-        else if(humanPos < -100){
+        else if(humanPos < -150){
             printf("Turning right\n");
             turn_right(humanPos/pixelToDegree);
             sleepForMs(1000);
