@@ -153,7 +153,7 @@ int main()
 
 void endAll() {
     printf("Quitting Program!\n");
-    ultrasonicShutdown();
+    //ultrasonicShutdown();
     drive_cleanup();
     //Display_cleanup();
     // pthread_t id= cleanupSegDisplay();
