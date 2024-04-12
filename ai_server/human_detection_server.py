@@ -132,7 +132,6 @@ def handle_client_image(client_connection):
         image_size = int(image_size_str)
 
         #send message trigger sending data
-        print("image_size_str: ", image_size_str)
         client_connection.send(b"okay")
 
         #keep read file until == image_size
@@ -146,7 +145,7 @@ def handle_client_image(client_connection):
             #slow down the transferring data - send confirmation
             #client_connection.send(b"okay")
         
-        print("Total bytes received:", len(image_data))
+        # print("Total bytes received:", len(image_data))
 
         #Save iamge data into the file
         save_image_from_bytes_with_opencv(image_data, IMG_PATH)
@@ -154,11 +153,9 @@ def handle_client_image(client_connection):
         #call AI read image
         distance_to_human = process_image(IMG_PATH)
         if distance_to_human is None:
-            print("No human detected within the image!")
             distance_bytes = struct.pack("!i", 0)
             client_connection.send(distance_bytes)
         else:
-            print("Distance to nearest human: ", int(distance_to_human))
             distance_bytes = struct.pack("!i", int(distance_to_human))
             client_connection.send(distance_bytes)
     except Exception as e:
