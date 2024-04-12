@@ -24,7 +24,7 @@ int main()
     drive_init();  
     initializeUltrasonic();
 
-    int humanPos;
+
     int humanPos = camera_operation();
     printf("humanPos: %d\n",humanPos);
     while (humanPos >= 99999)
@@ -73,6 +73,7 @@ int main()
     
     }
     
+    intmax_t distanceToTarget = getDistance();
     while (distanceToTarget > 80)
     {
         break;

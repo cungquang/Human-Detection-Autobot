@@ -42,7 +42,7 @@ static void SleepForTurn(int degree)
 {
     usleep((degree * secondPerDegree * 1000000)+1000*(80/degree));
     printf("standard turn time: %f\n",degree * secondPerDegree * 1000000);
-    printf("added turn time: %f\n",1000*80/degree);
+    printf("added turn time: %d\n",1000*80/degree);
 }
 
 void turn_left(int degree)
