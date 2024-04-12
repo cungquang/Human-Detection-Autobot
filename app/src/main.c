@@ -29,7 +29,7 @@ int main()
     initializeUltrasonic();
 
 
-    
+    int humanPos;
     while(true){
 
         humanPos = camera_operation();
