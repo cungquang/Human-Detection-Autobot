@@ -75,12 +75,10 @@ void* ultrasonicLoop() {
             // Calculate distance in centimeters (assumes speed of sound is 343m/s)
             distance[count] = timeElapsed * SPEED_OF_SOUND_CM_PER_NS / 2.0;  // in cm
             //printf("Time elapsed is: %lld ms\n", timeElapsed);
-            // if (distance < 0)
-            // {
-            //     printf("Distance returned as negative!\n");
-            // } else {
-            //     printf("Distance: %jd cm\n", distance);
-            // }
+            if (distance[count] < 0)
+            {
+                distance[count] = 400;
+            }
         }
         pthread_mutex_unlock(&mutex);
         count++;
@@ -139,7 +137,7 @@ void* ultrasonicLoop() {
 // }
 
 intmax_t getDistance(){
-    sleepForMs(500);
+    sleepForMs(2500);
     pthread_mutex_lock(&mutex);
     intmax_t totalDistance = distance[0] + distance[1] + distance[2]+ distance[3] + distance[4];
     pthread_mutex_unlock(&mutex);

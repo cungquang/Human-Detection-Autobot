@@ -87,7 +87,7 @@ int main()
         //break;
 
          // printf("humanPos: %d\n",humanPos);
-         sleepForMs(1000);
+         //sleepForMs(1000);
         distanceToTarget = getDistance();
         printf("distance initial: %lld\n",distanceToTarget);
         // drive_set_both_wheels(true);
