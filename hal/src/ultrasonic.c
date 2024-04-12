@@ -135,6 +135,7 @@ intmax_t getDistance(){
                 
                 //printf("Time elapsed is: %lld ms\n", timeElapsed);
             }
+            return 650;
             count++;
             sleepForMs(100);  // Wait before next measurement
         }
