@@ -20,7 +20,7 @@ int pixels = 1920;
 // Allow module to ensure it has been initialized (once!)
 static bool is_initialized = false;
 double rampUpTime = 0.04;
-double secondPerRotation = 1.1;
+double secondPerRotation = 1.8;
 double secondPerDegree;
 
 static void SleepForTurn(int degree);

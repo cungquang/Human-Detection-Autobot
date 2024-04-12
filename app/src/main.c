@@ -41,7 +41,7 @@ int main()
         if (humanPos >= 99999)
         {
             printf("no human found\n");
-            turn_right(20);
+            turn_right(25);
             sleepForMs(1000);
             continue;
             //humanPos = camera_operation();
@@ -53,7 +53,7 @@ int main()
             sleepForMs(1000);
             continue;
         }
-        else if(humanPos < 100){
+        else if(humanPos < -100){
             printf("Turning right\n");
             turn_right(humanPos/pixelToDegree);
             sleepForMs(1000);
