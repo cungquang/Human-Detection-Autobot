@@ -15,7 +15,7 @@
 // #define UDP_SERVER_PORT 12345
 
 //Python Server
-#define PYTHON_SERVER_IP "192.168.26.128"
+#define PYTHON_SERVER_IP "192.168.148.129"
 #define PYTHON_SERVER_PORT 6666
 
 // timeout
