@@ -29,19 +29,19 @@ int main()
     initializeUltrasonic();
 
 
-    int humanPos = camera_operation();
-    printf("humanPos: %d\n",humanPos);
+    
     while(true){
 
         humanPos = camera_operation();
-        //printf("humanPos: %d\n",humanPos);
+        printf("humanPos: %d\n",humanPos);
         if (humanPos >= 99999)
         {
             printf("no human found\n");
             turn_right(20);
             sleepForMs(1000);
-            humanPos = camera_operation();
-            printf("humanPos: %d\n",humanPos);
+            continue;
+            //humanPos = camera_operation();
+            //printf("humanPos: %d\n",humanPos);
         }
         if(humanPos > 100){
             printf("Turning right\n");
@@ -71,6 +71,11 @@ int main()
             distanceToTarget = getDistance();
             printf("avg distance to target in main: %lld\n",distanceToTarget);
             // count++;
+        }
+        else{
+            printf("engaging fine tune mode.\n")
+            break;
+        
         }
     }
     
