@@ -112,7 +112,7 @@ void fileWriter(char* filePath, char* data) {
 }
 
 // Provided by Brian Fraser
-void write_to_file(const char* filename, int value){
+void setIntValueInFile(const char* filename, int value){
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
         printf("Error OPENING %s.", filename);

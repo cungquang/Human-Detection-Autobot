@@ -50,8 +50,8 @@ void initSegDisplay(){
 	writeI2cReg(i2cFileDesc, REG_DIRA, 0x00);
 	writeI2cReg(i2cFileDesc, REG_DIRB, 0x00);
 
-	write_to_file(gpio_61_value_path, 0);
-	write_to_file(gpio_44_value_path, 0);
+	setIntValueInFile(gpio_61_value_path, 0);
+	setIntValueInFile(gpio_44_value_path, 0);
 
 	pthread_create(&id, NULL, segMain, NULL);
 }

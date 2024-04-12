@@ -18,6 +18,6 @@ void runCommand(char* command);
 void write_int_to_file(const char* filename, int value);
 void fileWriter(char* filePath, char* data);
 // Provided by Brian Fraser
-void write_to_file(const char* filename, int value);
+void setIntValueInFile(const char* filename, int value);
 
 #endif
