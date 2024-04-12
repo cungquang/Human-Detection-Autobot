@@ -22,7 +22,7 @@ int main()
     Pwm_init();
     drive_init();  
     initializeUltrasonic();
-    buzzer_init();
+    
 
 
     
@@ -30,20 +30,17 @@ int main()
 
 
     // int humanPos;
-    // humanPos = camera_operation();
+    int humanPos = camera_operation();
     // printf("humanPos: %d\n",humanPos);
-    if (1<99999){
-        double distanceToTarget = getDistance();
+    double distanceToTarget = getDistance();
 
-        drive_set_both_wheels(true);
-        while(distanceToTarget<30){
-            distanceToTarget = getDistance();
-            sleepForMs(100);
-        }
-          
-        
-        play_sound();
+    drive_set_both_wheels(true);
+    while(distanceToTarget<30){
+        distanceToTarget = getDistance();
+        sleepForMs(100);
     }
+    play_sound();
+
 
 
 
