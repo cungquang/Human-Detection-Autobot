@@ -34,6 +34,7 @@ int main()
 
 
     int humanPos;
+    intmax_t distanceToTarget;
     while(true){
 
         humanPos = camera_operation();
@@ -41,7 +42,7 @@ int main()
         if (humanPos >= 99999)
         {
             printf("no human found\n");
-            turn_right(15);
+            turn_right(12);
             sleepForMs(1000);
             continue;
             //humanPos = camera_operation();
@@ -60,10 +61,10 @@ int main()
             continue;
         }
         printf("final humanPos: %d\n",humanPos);
-        break;
+        //break;
 
          // printf("humanPos: %d\n",humanPos);
-        intmax_t distanceToTarget = getDistance();
+        distanceToTarget = getDistance();
         printf("distance initial: %lld\n",distanceToTarget);
         // drive_set_both_wheels(true);
         if(distanceToTarget > 180){
@@ -76,17 +77,15 @@ int main()
             printf("avg distance to target in main: %lld\n",distanceToTarget);
             // count++;
         }
-        else{
+        if (distanceToTarget < 180)
+        {
             printf("engaging fine tune mode.\n");
             break;
-        
         }
     }
-    
-    intmax_t distanceToTarget = getDistance();
+
     while (distanceToTarget > 80)
     {
-        break;
         drive_set_both_wheels(true);
         sleepForMs(((distanceToTarget/2)/60)*1000);
         drive_set_both_wheels(false);

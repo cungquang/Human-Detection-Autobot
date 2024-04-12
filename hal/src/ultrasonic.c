@@ -114,6 +114,7 @@ intmax_t getDistance(){
 
             if (elapsed_time_ns >= timeout_ns) {
                 //printf("Timeout! Object is too far.\n");
+                distance[count] = 650;
             } else {
                 intmax_t timeElapsed = stopTime - startTime;
                 //double timeElapsedInSec = (double)timeElapsed/1000;
@@ -122,7 +123,7 @@ intmax_t getDistance(){
                 //printf("Time elapsed is: %lld ms\n", timeElapsed);
                 if (distance[count] < 0)
                 {
-                    printf("Distance returned as negative!\n");
+                    //printf("Distance returned as negative!\n");
                 } else {
                     //printf("Distance: %lld cm\n", distance[count]);
                 }
