@@ -13,11 +13,16 @@
 #define RIGHT_WHEEL_VALUE_FILE_PATH "/sys/class/gpio/gpio69/value"
 
 
+int pixels = 1920;
+
+
 // Allow module to ensure it has been initialized (once!)
 static bool is_initialized = false;
 double rampUpTime = 0.04;
 double secondPerRotation = 1.1;
 double secondPerDegree;
+
+static void SleepForTurn(int degree);
 
 
 void drive_init(void) 
@@ -33,11 +38,18 @@ void drive_init(void)
     secondPerDegree = secondPerRotation/360.0;
 }
 
+static void SleepForTurn(int degree)
+{
+    usleep((degree * secondPerDegree * 1000000)+1000*(80/degree));
+    printf("standard turn time: %f\n",degree * secondPerDegree * 1000000);
+    printf("added turn time: %f\n",1000*80/degree);
+}
+
 void turn_left(int degree)
 {
     drive_set_left_wheel(false);
     drive_set_right_wheel(true);
-    usleep((degree * secondPerDegree * 1000000)-rampUpTime*1000000);
+    SleepForTurn(degree);
     drive_set_left_wheel(false);
     drive_set_right_wheel(false);
 }
@@ -46,7 +58,7 @@ void turn_right(int degree)
 {
     drive_set_left_wheel(true);
     drive_set_right_wheel(false);
-    usleep(degree * secondPerDegree * 1000000);
+    SleepForTurn(degree);
     drive_set_left_wheel(false);
     drive_set_right_wheel(false);
 }
