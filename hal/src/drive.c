@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <math.h>
 
 #define LEFT_WHEEL_DIRECTION_FILE_PATH "/sys/class/gpio/gpio68/direction"
 #define LEFT_WHEEL_VALUE_FILE_PATH "/sys/class/gpio/gpio68/value"
@@ -44,9 +45,9 @@ static void SleepForTurn(int degree)
     {
         return;
     }
-    usleep(abs((degree * secondPerDegree * 1000000)+1000*(30.0/(double)degree)));
-    printf("standard turn time: %f\n",abs(degree * secondPerDegree * 1000000));
-    printf("added turn time: %f\n",abs(1000*30.0/(double)degree));
+    usleep(fabs((degree * secondPerDegree * 1000000)+500*(20.0/(double)degree)));
+    printf("standard turn time: %f\n",fabs(degree * secondPerDegree * 1000000));
+    printf("added turn time: %f\n",fabs(500*20.0/(double)degree));
 }
 
 void turn_left(int degree)

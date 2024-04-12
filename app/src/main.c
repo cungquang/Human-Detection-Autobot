@@ -12,6 +12,7 @@ int camera_operation(void)
 {
     Tcp_init();
     char *imagePath = captureImage();
+    sleepForMs(1000);
     int result_fromAI = Tcp_sendImage(imagePath);
 
     Tcp_cleanUp();
@@ -46,13 +47,13 @@ int main()
         }
         if(humanPos > 100){
             printf("Turning left\n");
-            turn_left(humanPos/100);
+            turn_left(humanPos/50);
             sleepForMs(1000);
             continue;
         }
         else if(humanPos < 100){
             printf("Turning right\n");
-            turn_right(humanPos/100);
+            turn_right(humanPos/50);
             sleepForMs(1000);
             continue;
         }
