@@ -127,7 +127,7 @@ void configureCamera(){
 
 char* captureImage() {
         pictureCount++;
-        setSegDisplay(pictureCount);
+        // setSegDisplay(pictureCount);
     // void* buffer_start;
     // buffer_start = mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
 
