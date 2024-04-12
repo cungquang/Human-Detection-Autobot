@@ -36,9 +36,9 @@ int main()
     intmax_t distanceToTarget = getDistance();
     printf("distance initial: %lld\n",distanceToTarget);
    // drive_set_both_wheels(true);
-    while(distanceToTarget > 100){
+    while(distanceToTarget > 180){
         drive_set_both_wheels(true);
-        sleepForMs(1000);
+        sleepForMs(2000); // drives for 60 cm per second
         //distanceToTarget = getDistance();
         drive_set_both_wheels(false);
         sleepForMs(3000);
@@ -46,9 +46,16 @@ int main()
         printf("avg distance to target in main: %lld\n",distanceToTarget);
        // count++;
     }
-    drive_set_left_wheel(true);
-    sleepForMs(1000);
-    drive_set_left_wheel(false);
+    while (distanceToTarget > 50)
+    {
+        drive_set_both_wheels(true);
+        sleepForMs(((distanceToTarget/2)/60)*1000);
+        drive_set_both_wheels(false);
+        sleepForMs(3000);
+        distanceToTarget = getDistance();
+        printf("avg distance to target in main: %lld\n",distanceToTarget);
+    }
+    
     
     //play_sound();
 
