@@ -131,10 +131,13 @@ int main2()
 }
 
    int main() {
+        initializeUltrasonic();
         while (true)
         {
-            intmax_t distanceToTarget = getDistance();
-            printf("Average distance: is %lld", distanceToTarget);
+            //intmax_t distanceToTarget = getDistance();
+            //printf("Average distance: is %lld", distanceToTarget);
+            sleepForMs(100);
         }
+        ultrasonicShutdown();
     return 0;
    }
