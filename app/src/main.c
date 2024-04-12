@@ -34,13 +34,13 @@ int main()
     
     // printf("humanPos: %d\n",humanPos);
     intmax_t distanceToTarget = getDistance();
-    printf("distance to target in main: %lf",distanceToTarget);
+    printf("distance to target in main: %lld",distanceToTarget);
    // drive_set_both_wheels(true);
     while(distanceToTarget > 40){
         drive_set_both_wheels(true);
         sleepForMs(1000);
         //distanceToTarget = getDistance();
-        printf("distance to target in main: %d",distanceToTarget);
+        printf("distance to target in main: %lld",distanceToTarget);
         drive_set_both_wheels(false);
         sleepForMs(3000);
         distanceToTarget = getDistance();
