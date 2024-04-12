@@ -109,7 +109,7 @@ int main()
         // drive_set_both_wheels(true);
         if(distanceToTarget > 180){
             drive_set_both_wheels(true);
-            sleepForMs(1000);
+            sleepForMs(1500);
             //distanceToTarget = getDistance();
             drive_set_both_wheels(false);
             if (checkJoystick() != -1)
