@@ -29,6 +29,7 @@ int count = 0;
 bool endProgram = false;
 
 //static bool endProgram = false;
+void* ultrasonicLoop();
 
 void initializeUltrasonic() {
     runCommand("config-pin p8.07 gpio");
@@ -38,7 +39,7 @@ void initializeUltrasonic() {
     pthread_create(&ultrasonicThread, NULL, ultrasonicLoop, NULL);
 }
 
-static void* ultrasonicLoop() {
+void* ultrasonicLoop() {
     intmax_t  distance;
 
     while (!endProgram) {
