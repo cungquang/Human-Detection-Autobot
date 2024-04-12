@@ -45,11 +45,11 @@ int hasNotSeenPerson = 0;
 int main() 
 {
     //int count = 0;
+    initSegDisplay();
     Pwm_init();
     drive_init();  
     initializeUltrasonic();
     initializeJoystick();
-    Display_init();
     
     int humanPos;
     intmax_t distanceToTarget;
@@ -155,7 +155,9 @@ void endAll() {
     printf("Quitting Program!\n");
     ultrasonicShutdown();
     drive_cleanup();
-    Display_cleanup();
+    //Display_cleanup();
+    pthread_t id= cleanupSegDisplay();
+    pthread_join(id, NULL);
 }
 
 //    int main() {

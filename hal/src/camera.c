@@ -13,6 +13,7 @@
 #include <time.h>
 #include <libv4l2.h>
 #include "buzzer.h"
+#include "display.h"
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
@@ -126,6 +127,7 @@ void configureCamera(){
 
 char* captureImage() {
         pictureCount++;
+        setSegDisplay(pictureCount);
     // void* buffer_start;
     // buffer_start = mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
 
