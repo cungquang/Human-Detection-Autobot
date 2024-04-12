@@ -40,10 +40,10 @@ int main()
         drive_set_both_wheels(true);
         sleepForMs(1000);
         //distanceToTarget = getDistance();
-        printf("distance to target in main: %lld\n",distanceToTarget);
         drive_set_both_wheels(false);
         sleepForMs(3000);
         distanceToTarget = getDistance();
+        printf("avg distance to target in main: %lld\n",distanceToTarget);
        // count++;
     }
     
