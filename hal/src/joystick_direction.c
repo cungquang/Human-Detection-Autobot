@@ -41,6 +41,5 @@ bool isPressed(struct JoystickDirection *joystick) {
             return !valueReader(joystick->valuePath);
         }
     }
-    
-    return 
+    return false;
 }
