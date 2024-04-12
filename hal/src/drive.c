@@ -73,6 +73,8 @@ void drive_set_both_wheels(bool forward)
 void drive_cleanup(void)
 {
     // Free any memory, close files, ...
-    assert(is_initialized);
+    run_command("config-pin p8.09 default");
+    run_command("config-pin p8.10 default");
+    //assert(is_initialized);
     is_initialized = false;
 }

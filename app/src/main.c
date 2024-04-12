@@ -24,24 +24,33 @@ int main()
     initializeUltrasonic();
     //buzzer_init();
 
+
+    
+
+
+
     // int humanPos;
     // humanPos = camera_operation();
     // printf("humanPos: %d\n",humanPos);
     if (1<99999){
         //double distanceToTarget = getDistance();
         int count = 0;
-        while(count<5){
-            //drive_set_both_wheels(true);
-            //sleepForMs(1000);
-            //drive_set_both_wheels(false);
+        while(count<3){
+            drive_set_both_wheels(true);
             sleepForMs(1000);
+            drive_set_both_wheels(false);
+            sleepForMs(7000);
             //distanceToTarget = getDistance();
             //printf("distanceToTarget %lf\n",distanceToTarget);
+            count++;
         }
+        drive_cleanup();
         //play_sound();
     }
 
+
+
     ultrasonicShutdown();
-    drive_cleanup();
+//    drive_cleanup();
     return 0;
 }
