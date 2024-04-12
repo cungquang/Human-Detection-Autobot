@@ -39,10 +39,14 @@ void drive_init(void)
 }
 
 static void SleepForTurn(int degree)
-{
-    usleep((degree * secondPerDegree * 1000000)+1000*(80/degree));
+{   
+    if (degree == 0)
+    {
+        return 0;
+    }
+    usleep((degree * secondPerDegree * 1000000)+1000*(80.0/(double)degree));
     printf("standard turn time: %f\n",degree * secondPerDegree * 1000000);
-    printf("added turn time: %d\n",1000*80/degree);
+    printf("added turn time: %d\n",1000*80.0/(double)degree);
 }
 
 void turn_left(int degree)

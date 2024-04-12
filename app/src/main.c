@@ -14,6 +14,10 @@ int camera_operation(void)
     int result_fromAI = Tcp_sendImage(imagePath);
 
     Tcp_cleanUp();
+    char command[200];
+    sprintf(command, "rm %s", imagePath);
+    runCommand(command);
+    free(imagePath);
     return result_fromAI;
 }
 
