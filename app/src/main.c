@@ -22,39 +22,22 @@ int main()
     Pwm_init();
     drive_init();  
     initializeUltrasonic();
+    buzzer_init();
 
-   
-    for (int i =0;i<5;i++){
-        double distance = getDistance();
-        printf("distance %lf\n",distance);
-        sleepForMs(1000);
-    }
-
-    //int humanPos;
-    //humanPos = camera_operation();
-    //printf("humanPos: %d\n",humanPos);
-    //if (humanPos<99999){
-    drive_set_both_wheels(true);
-    int count = 0;
-    while(count<5){
-        count++;
-        // double distance = getDistance();
-        // printf("distance %lf\n",distance);
-        // if(distance < 5 && distance > 0){
-        //     printf("stopping after detection\n");
-        //     drive_set_both_wheels(false);
-        //     play_sound();
-        //     break;
-        // }
-        sleepForMs(1000);
-    }
-    drive_set_both_wheels(false);
-    //}
-    sleepForMs(1000);
-    for (int i =0;i<5;i++){
-        // double distance = getDistance();
-        // printf("distance %lf\n",distance);
-        sleepForMs(1000);
+    int humanPos;
+    humanPos = camera_operation();
+    printf("humanPos: %d\n",humanPos);
+    if (humanPos<99999){
+        double distanceToTarget = getDistance();
+        while(distanceToTarget > 150){
+            drive_set_both_wheels(true);
+            sleepForMs(1000);
+            drive_set_both_wheels(false);
+            sleepForMs(1000);
+            distanceToTarget = getDistance();
+            printf("distanceToTarget %lf\n",distanceToTarget);
+        }
+        play_sound();
     }
 
     ultrasonicShutdown();
