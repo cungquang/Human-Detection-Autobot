@@ -19,7 +19,7 @@ int camera_operation(void)
 
 int main() 
 {
-    int count = 0;
+    //int count = 0;
     Pwm_init();
     drive_init();  
     initializeUltrasonic();
@@ -33,22 +33,23 @@ int main()
     // }
     
     // printf("humanPos: %d\n",humanPos);
-    double distanceToTarget = getDistance();
+    intmax_t distanceToTarget = getDistance();
     printf("distance to target in main: %lf",distanceToTarget);
    // drive_set_both_wheels(true);
-    while(count<5){
-        drive_set_left_wheel(true);
+    while(distanceToTarget > 40){
+        drive_set_both_wheels(true);
         sleepForMs(1000);
         //distanceToTarget = getDistance();
-        //printf("distance to target in main: %lf",distanceToTarget);
+        printf("distance to target in main: %d",distanceToTarget);
         drive_set_both_wheels(false);
-        sleepForMs(5000);
-        count++;
+        sleepForMs(3000);
+        distanceToTarget = getDistance();
+       // count++;
     }
     
     //play_sound();
 
-    ultrasonicShutdown();
+    //ultrasonicShutdown();
     drive_cleanup();
     return 0;
 }
