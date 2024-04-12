@@ -45,7 +45,7 @@ int hasNotSeenPerson = 0;
 int main() 
 {
     //int count = 0;
-    initSegDisplay();
+    //initSegDisplay();
     Pwm_init();
     drive_init();  
     initializeUltrasonic();
@@ -156,8 +156,8 @@ void endAll() {
     ultrasonicShutdown();
     drive_cleanup();
     //Display_cleanup();
-    pthread_t id= cleanupSegDisplay();
-    pthread_join(id, NULL);
+    // pthread_t id= cleanupSegDisplay();
+    // pthread_join(id, NULL);
 }
 
 //    int main() {
