@@ -46,6 +46,9 @@ int main()
         printf("avg distance to target in main: %lld\n",distanceToTarget);
        // count++;
     }
+    drive_set_left_wheel(true);
+    sleepForMs(1000);
+    drive_set_left_wheel(false);
     
     //play_sound();
 
