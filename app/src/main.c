@@ -87,11 +87,11 @@ int main()
     while (distanceToTarget > 80)
     {
         drive_set_both_wheels(true);
-        sleepForMs(((distanceToTarget/2)/60)*1000);
+        sleepForMs((((double)distanceToTarget/2.0)/60.0)*1000.0);
         drive_set_both_wheels(false);
         sleepForMs(3000);
         distanceToTarget = getDistance();
-        printf("avg distance to target in main: %lld\n",distanceToTarget);
+        printf("avg distance to target in fine tune: %lld\n",distanceToTarget);
     }
    
     
