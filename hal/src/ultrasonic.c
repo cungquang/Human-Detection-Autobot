@@ -24,7 +24,7 @@
 #define SPEED_OF_SOUND_CM_PER_US 0.0343 // Speed of sound in cm/us
 #define SPEED_OF_SOUND_CM_PER_NS  0.0000343 // Speed of sound in cm/ns
 
-static pthread_t ultrasonicThread;
+//static pthread_t ultrasonicThread;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 //bool endProgram = false;
