@@ -8,7 +8,7 @@
 #include "ultrasonic.h"
 #include "hal_helper.h"
 
-static int pixelToDegree = 50;
+//static int pixelToDegree = 50;
 
 int camera_operation(void)
 {

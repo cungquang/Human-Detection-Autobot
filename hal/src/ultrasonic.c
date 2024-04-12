@@ -139,8 +139,10 @@ void* ultrasonicLoop() {
 // }
 
 intmax_t getDistance(){
+    pthread_mutex_lock(&mutex);
     intmax_t totalDistance = distance[0] + distance[1] + distance[2];
-    return totalDistance/count;
+    pthread_mutex_unlock(&mutex);
+    return totalDistance/3;
 }
 
 void ultrasonicShutdown() {
