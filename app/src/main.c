@@ -27,34 +27,30 @@ int main()
 
     int humanPos = camera_operation();
     printf("humanPos: %d\n",humanPos);
-    while (humanPos >= 99999)
-    {
-        printf("no human found\n");
-        turn_right(20);
-        sleepForMs(1000);
-        humanPos = camera_operation();
-        printf("humanPos: %d\n",humanPos);
-    }
-
-
     while(true){
 
         humanPos = camera_operation();
-        printf("humanPos: %d\n",humanPos);
-        if(humanPos > 50){
-            turn_right(humanPos/50);
+        //printf("humanPos: %d\n",humanPos);
+        if (humanPos >= 99999)
+        {
+            printf("no human found\n");
+            turn_right(20);
+            sleepForMs(1000);
+            humanPos = camera_operation();
+            printf("humanPos: %d\n",humanPos);
+        }
+        if(humanPos > 100){
+            turn_right(humanPos/100);
             sleepForMs(1000);
             continue;
         }
-        else if(humanPos < 50){
-            turn_left(humanPos/50);
+        else if(humanPos < 100){
+            turn_left(humanPos/100);
             sleepForMs(1000);
             continue;
         }
         printf("final humanPos: %d\n",humanPos);
         break;
-
-
 
          // printf("humanPos: %d\n",humanPos);
         intmax_t distanceToTarget = getDistance();
@@ -70,7 +66,6 @@ int main()
             printf("avg distance to target in main: %lld\n",distanceToTarget);
             // count++;
         }
-    
     }
     
     intmax_t distanceToTarget = getDistance();
