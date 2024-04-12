@@ -8,6 +8,8 @@
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 #include "camera.h"
+#include "app_helper.h"
+#include "hal_helper.h"
 
 #define I2CDRV_LINUX_BUS0 "/dev/i2c-0"
 #define I2CDRV_LINUX_BUS1 "/dev/i2c-1"
@@ -48,8 +50,8 @@ void initSegDisplay(){
 	writeI2cReg(i2cFileDesc, REG_DIRA, 0x00);
 	writeI2cReg(i2cFileDesc, REG_DIRB, 0x00);
 
-	setIntValueInFile(gpio_61_value_path, 0);
-	setIntValueInFile(gpio_44_value_path, 0);
+	write_to_file(gpio_61_value_path, 0);
+	write_to_file(gpio_44_value_path, 0);
 
 	pthread_create(&id, NULL, segMain, NULL);
 }
