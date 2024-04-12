@@ -6,11 +6,11 @@
 #include <time.h>
 #include <unistd.h>
 
-#define LEFT_WHEEL_DIRECTION_FILE_PATH "/sys/class/gpio/gpio70/direction"
-#define LEFT_WHEEL_VALUE_FILE_PATH "/sys/class/gpio/gpio70/value"
+#define LEFT_WHEEL_DIRECTION_FILE_PATH "/sys/class/gpio/gpio68/direction"
+#define LEFT_WHEEL_VALUE_FILE_PATH "/sys/class/gpio/gpio68/value"
 
-#define RIGHT_WHEEL_DIRECTION_FILE_PATH "/sys/class/gpio/gpio71/direction"
-#define RIGHT_WHEEL_VALUE_FILE_PATH "/sys/class/gpio/gpio71/value"
+#define RIGHT_WHEEL_DIRECTION_FILE_PATH "/sys/class/gpio/gpio69/direction"
+#define RIGHT_WHEEL_VALUE_FILE_PATH "/sys/class/gpio/gpio69/value"
 
 
 // Allow module to ensure it has been initialized (once!)
@@ -24,8 +24,8 @@ void drive_init(void)
 {
     assert(!is_initialized);
     is_initialized = true;
-    run_command("config-pin p8.45 gpio");
-    run_command("config-pin p8.46 gpio");
+    run_command("config-pin p8.09 gpio");
+    run_command("config-pin p8.10 gpio");
     set_char_value_in_file(LEFT_WHEEL_DIRECTION_FILE_PATH, "out");
     set_char_value_in_file(RIGHT_WHEEL_DIRECTION_FILE_PATH, "out");
     drive_set_left_wheel(false);
