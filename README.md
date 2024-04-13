@@ -7,7 +7,7 @@ Members:
 - Hong Quang Cung
 
 Team Picture:
-![Alt text]([Team_Image](https://github.com/cungquang/CMPT433_FinalProject/blob/main/2024_04_12%4012_00_02-0809.jpg))
+![Team_Image](https://github.com/cungquang/CMPT433_FinalProject/blob/main/2024_04_12%4012_00_02-0809.jpg)
 
 ## Project Description
 
