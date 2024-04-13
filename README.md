@@ -35,8 +35,6 @@
   └── README.md
 ```  
 
-Note: This application is just to help you get started! It also has a bug in its computation (just for fun!)
-
 ## Usage
 
 - Install CMake: `sudo apt update` and `sudo apt install cmake`
