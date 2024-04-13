@@ -1,10 +1,13 @@
-# Final Project
+# Project Description
 Project Name:
 Group Name:
 Members:
 - Adam Atbi
 - Daven Chohan
 - Hong Quang Cung
+
+Team Picture:
+![Alt text](url_to_image)
 
 ## Project Description
 
