@@ -1,5 +1,4 @@
-# Project Description
-- Project Name: Beagle Burnout Brigade
+# Beagle Burnout Brigade
 - Team Members:
   - Adam Atbi
   - Daven Chohan
