@@ -1,10 +1,9 @@
 # Project Description
-Project Name:
-Group Name:
-Members:
-- Adam Atbi
-- Daven Chohan
-- Hong Quang Cung
+- Project Name: Beagle Burnout Brigade
+- Team Members:
+  - Adam Atbi
+  - Daven Chohan
+  - Hong Quang Cung
 
 Team Picture:
 ![Team_Image](https://github.com/cungquang/CMPT433_FinalProject/blob/main/2024_04_12%4012_00_02-0809.jpg)
