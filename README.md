@@ -25,7 +25,7 @@ analysis in order to accurately identify the target in the image.
 
 ### Video Demo:
 
-[Project_Demo_Video](https://www.youtube.com/watch?v=vF6NraIldHc)
+[Link_To_Project_Demo_Video](https://www.youtube.com/watch?v=vF6NraIldHc)
 
 ## General Server File Sturcture
 
