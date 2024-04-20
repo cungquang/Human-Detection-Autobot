@@ -74,7 +74,39 @@ analysis in order to accurately identify the target in the image.
   - Most CMake options for the project can be found in VS Code's CMake view (very left-hand side).
 - Build the project using Ctrl+Shift+B, or by the menu: Terminal > Run Build Task...
   - If you try to build but get an error about "build is not a directory", the re-run CMake's build as mentioned above.
- 
+
+### Setup for Camera
+#### Step 1: Install these libraries on both the host (Linux Debian 11) and target (Beagle Bone)
+- They are required on the host for the IDE to not complain which can make coding easier
+- They are required on the target to be utilized by the Beaglebone
+```
+sudo apt-get install libv4l-dev
+sudo apt-get install v4l-utils
+```
+
+#### Step 2: Move library files to a shared location
+- Have a shared folder between the target and the host (via NFS). Here is the NFS guide: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt433/guides/files/NFSGuide.pdf
+- Copy the following files to the shared folder (located in /usr/lib/arm-linux-gnueabihf)
+```
+libv4lconvert.so
+libjpeg.so
+libv4l2.so
+```
+
+#### Step 3: Copy picture taking code
+- Clone the grabber.c file (credit to Derek Molloy) `https://github.com/derekmolloy/boneCV/blob/master/grabber.c`
+- Add the code to an existing file or make grabber.c an executable using cmake
+- In CMakeLists.txt file and make sure you link the libraries you copied in Step 2.
+
+#### Step 4: Connect USB Camera
+- Plug in your USB camera to the Beaglebone
+- Ensure the Beaglebone recognizes the camera by running lsusb
+
+#### Step 5: Run your executable
+- Your Beaglebone needs write permissions to create the image file and save it
+- The image is saved wherever your executable was run from
+- The image is saved as a .ppm file
+
 ### Setup for Python Server
  #### Step 1: Setup AWS Rekognition
  
