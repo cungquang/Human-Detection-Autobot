@@ -13,7 +13,17 @@ their position, and autonomously navigate towards them, stopping precisely at th
 aid of an ultrasonic sensor. The Beagle Bone will communicate with a Python server for image
 analysis in order to accurately identify the target in the image.
 
-Video Demo:
+### Accomplishments:
+ - The robotic car is capable of detecting humans in images.
+ - It can autonomously rotate to search for humans.
+ - Equipped with a camera, the robotic car captures the current scene and transmits images to the server.
+ - The Python server receives images from the robotic car, detects humans, and returns the distance between them and the center of the picture if present.
+ - Ultrasound is able to measure the distance between human and the robotic car in cm
+ - Robotic car can be manually turned off by using joystick
+ - Buzzer plays an audio cue whenever it transmits an TCP message to the server
+ - 14-Seg display was able to accurately acquire how many pictures have been taken and display it
+
+### Video Demo:
 
 [Project_Demo_Video](https://www.youtube.com/watch?v=vF6NraIldHc)
 
