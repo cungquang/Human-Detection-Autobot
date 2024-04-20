@@ -27,8 +27,8 @@ Video Demo:
 ```
   .
   ├── ai_server
-  │   └── human_detection_server.py
-  │   └── human_detection_test.py
+  │   ├── human_detection_server.py
+  │   ├── human_detection_test.py
   │   └── test_image.jpg
   ├── app
   │   ├── include
