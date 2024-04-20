@@ -97,6 +97,12 @@ libv4l2.so
 - Clone the grabber.c file (credit to Derek Molloy) `https://github.com/derekmolloy/boneCV/blob/master/grabber.c`
 - Add the code to an existing file or make grabber.c an executable using cmake
 - In CMakeLists.txt file and make sure you link the libraries you copied in Step 2.
+```
+target_link_libraries(hal PRIVATE
+${Home}/Project/public/public/pkgs/libv4l2.so
+${Home}/Project/public/public/pkgs/libv4lconvert.so
+${Home}/Project/public/public/pkgs/libjpeg.so
+```
 
 #### Step 4: Connect USB Camera
 - Plug in your USB camera to the Beaglebone
