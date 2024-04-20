@@ -88,11 +88,11 @@ analysis in order to accurately identify the target in the image.
     - In the “Permission Options”, for simplicity, select “Attach policies directly”
     - In “Attach policies directly” select “AmazonRekognitionFullAccess”, then create
   - Setup Access key:
-  - Open the “User” is created in the above section
-  - Click on “Create access key”
-  - Under “Access key best practices & alternatives”, select “Application running outside AWS”
-  - Click “Create access key” to complete the process
-  - Save the “Access key” and “Secret access key” - later use to access AWS Rekognition
+    - Open the “User” is created in the above section
+    - Click on “Create access key”
+    - Under “Access key best practices & alternatives”, select “Application running outside AWS”
+    - Click “Create access key” to complete the process
+    - Save the “Access key” and “Secret access key” - later use to access AWS Rekognition
 
 #### Step 2: Install Dependencies on Host (Linux - debian 11)
   - Install python and pip on host machine using below command
