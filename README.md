@@ -27,7 +27,7 @@ analysis in order to accurately identify the target in the image.
 
 [Link_To_Project_Demo_Video](https://www.youtube.com/watch?v=vF6NraIldHc)
 
-## General Server File Sturcture
+## General Server File Sturcture (Code)
 
 - `ai_server/`: Contains all AI and TCP Server code
 - `hal/`: Contains all low-level hardware abstraction layer (HAL) modules
@@ -60,6 +60,7 @@ analysis in order to accurately identify the target in the image.
 
 ## Usage
 
+### Setup for Visual Studio Code
 - Install CMake: `sudo apt update` and `sudo apt install cmake`
 - When you first open the project, click the "Build" button in the status bar for CMake to generate the `build\` folder and recreate the makefiles.
   - When you edit and save a CMakeLists.txt file, VS Code will automatically update this folder.
@@ -73,16 +74,14 @@ analysis in order to accurately identify the target in the image.
   - Most CMake options for the project can be found in VS Code's CMake view (very left-hand side).
 - Build the project using Ctrl+Shift+B, or by the menu: Terminal > Run Build Task...
   - If you try to build but get an error about "build is not a directory", the re-run CMake's build as mentioned above.
+ 
+### Setup for Python Server
+ - Install Python:
+`sudo apt install python3
+sudo apt install python3-pip `
 
-## Address Sanitizer
 
-- The address sanitizer built into gcc/clang is very good at catching memory access errors.
-- Enable it by uncomment the `fsanitize=address` lines in the root CMakeFile.txt.
-- For this to run on the BeagleBone, you must run:
-  `sudo apt install libasan6`
-  - Without this installed, you'll get an error:   
-    "error while loading shared libraries: libasan.so.6: cannot open shared object file: No such file or directory"
-
+ 
 ## Manually Running CMake
 
 To manually run CMake from the command line use:
