@@ -76,13 +76,53 @@ analysis in order to accurately identify the target in the image.
   - If you try to build but get an error about "build is not a directory", the re-run CMake's build as mentioned above.
  
 ### Setup for Python Server
- - Install Python:
-`sudo apt install python3 `
-` sudo apt install python3-pip `
- - Install boto3:
-`sudo pip3 install boto3`
+Step 1: Setup AWS Rekognition
+Register an AWS account (select region: ‘us-east-1’, or choose your region)
+Setup IAM Policy:
+Open AWS Console
+In “IAM”, select “Users” (left side panel)
+Click on “Create User” to create new user
+Provide name for “User”
+You might need to grant “programmatic access” - follow the link: https://docs.aws.amazon.com/rekognition/latest/dg/sdk-programmatic-access.html#programmatic-access-general	
+In the “Permission Options”, for simplicity, select “Attach policies directly”
+In “Attach policies directly” select “AmazonRekognitionFullAccess”, then create
+Setup Access key:
+Open the “User” is created in the above section
+Click on “Create access key”
+Under “Access key best practices & alternatives”, select “Application running outside AWS”
+Click “Create access key” to complete the process
+Save the “Access key” and “Secret access key” - later use to access AWS Rekognition
 
+Step 2: Install Dependencies on Host (Linux - debian 11)
+Install python and pip on host machine using below command
+`
+(host) ~$ sudo apt update
+(host) ~$ sudo apt install python3
+(host) ~$ sudo apt install python3-pip
+`
+Install boto3 package
+`
+(host) ~$ sudo pip3 install boto3
+`
 
+Step 3: Setup Python Server - TCP Protocol
+ - Libraries requires: “boto3”, “os”
+ - Use “os” library to get environment variable at run-time
+ - Provide “Access key” and “Secret Key” at run-time (AWS & Git does not allow you to expose these information publicly)
+```
+Example:
+AWS_Access_key:fake_access_key AWS_Secret_Key:fake_secret_key python3 humandetection.py
+```
+
+ - In server code, include this snippet to run AWS Rekognition:
+`
+AWS_ID = os.environ.get('AWS_ID')
+AWS_ACCESS = os.environ.get('AWS_ACCESS')
+client = boto3.client('rekognition', 
+        aws_access_key_id=AWS_ACCESS_KEY,
+        aws_secret_access_key=AWS_SECRET_ACCESS,
+        region_name='us-east-1')
+`
  
 ## Manually Running CMake
 
