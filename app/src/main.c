@@ -156,19 +156,4 @@ void endAll() {
     printf("Quitting Program!\n");
     //ultrasonicShutdown();
     drive_cleanup();
-    //Display_cleanup();
-    // pthread_t id= cleanupSegDisplay();
-    // pthread_join(id, NULL);
 }
-
-//    int main() {
-//         initializeUltrasonic();
-//         while (true)
-//         {
-//             intmax_t distanceToTarget = getDistance();
-//             printf("Average distance: is %lld", distanceToTarget);
-//             sleepForMs(100);
-//         }
-//         ultrasonicShutdown();
-//     return 0;
-//    }
