@@ -11,7 +11,8 @@
 The
 
 Video Demo:
-![Watch_Demo_Video](https://youtu.be/vF6NraIldHc)
+
+[Link to My YouTube Channel](https://www.youtube.com/watch?v=vF6NraIldHc)
 
 ## General Server File Sturcture
 
