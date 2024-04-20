@@ -13,6 +13,17 @@ their position, and autonomously navigate towards them, stopping precisely at th
 aid of an ultrasonic sensor. The Beagle Bone will communicate with a Python server for image
 analysis in order to accurately identify the target in the image.
 
+### Project Components:
+- AI Server (in Python):
+  - AWS Rekognition
+  - TCP Server
+- Robot (in C):
+  - Beagle Bone Green (Main control)
+  - TCP Client
+  - Robot car chassis; 2 Wheels
+  - Ultrasonic Distance Sensor
+  - Logitech C270 USB Camera
+
 ### Accomplishments:
  - The robotic car is capable of detecting humans in images.
  - It can autonomously rotate to search for humans.
