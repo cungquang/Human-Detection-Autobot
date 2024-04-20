@@ -77,8 +77,10 @@ analysis in order to accurately identify the target in the image.
  
 ### Setup for Python Server
  - Install Python:
-`sudo apt install python3
-sudo apt install python3-pip `
+`sudo apt install python3 `
+` sudo apt install python3-pip `
+ - Install boto3:
+`sudo pip3 install boto3`
 
 
  
