@@ -20,6 +20,7 @@ analysis in order to accurately identify the target in the image.
 - Robot (in C):
   - Beagle Bone Green (Main control)
   - TCP Client
+  - 4-Channel 5V relay board (works on 3.3V)
   - Robot car chassis; 2 Wheels
   - Ultrasonic Distance Sensor
   - Logitech C270 USB Camera
