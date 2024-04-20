@@ -124,7 +124,25 @@ client = boto3.client('rekognition',
         aws_access_key_id=AWS_ACCESS_KEY,
         aws_secret_access_key=AWS_SECRET_ACCESS,
         region_name='us-east-1')
-``` 
+```
+#### Step 4: Recommend workflow for TCP Communication (Client in C & Server in Python)
+
+- Server (Python)
+    - Establish a server (in Python) to listen for incoming connections - set limit number of connection as you need
+    - Create a separate thread to handle the request concurrently
+    - Initially, receive the metadata of the image/video, including the file type and size
+    - Confirm with the client before proceeding with data processing
+    - Receive all data pertaining to the file from the client 
+    - Reconstruct the file, store in local storage then send confirmation
+    - Call APIs to detect human then send the results
+    - Join the thread after connection closure
+- Client (C):
+    - Send the metadata, two most important things: file type (for reconstruct the file) and file size (expect how many bytes to receive)
+    - Wait for server to response before transmitting actual data
+    - Segment the image/video data into chunks of data, typically 1024 bytes each
+    - Wait for confirmation of successful receiving data 
+    - Listening to server’s response for the result of human detection
+    - Close connection
  
 ## Manually Running CMake
 
